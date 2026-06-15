@@ -79,6 +79,8 @@ tr:hover td{background:var(--maroon-bg);}
 .btn-edit:hover{background:var(--maroon);color:#fff;}
 .btn-del{background:#FEF2F2;color:var(--red);border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:.74rem;font-weight:600;transition:var(--transition);}
 .btn-del:hover{background:var(--red);color:#fff;}
+.co-suggest-btn{background:var(--maroon-bg);color:var(--maroon);border:1.5px solid var(--maroon);padding:5px 10px;border-radius:20px;cursor:pointer;font-size:.76rem;font-weight:600;transition:var(--transition);text-align:left;}
+.co-suggest-btn:hover{background:var(--maroon);color:#fff;}
 .empty-row td{text-align:center;padding:40px;color:var(--gray-400);}
 
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
@@ -329,7 +331,14 @@ textarea.form-control{resize:vertical;min-height:72px;}
           <div class="section-title" style="margin-bottom:4px;">Parsed Contact Info</div>
           <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:14px;">OCR auto-fills below — always review and correct before saving.</p>
           <div style="display:flex;flex-direction:column;gap:11px;">
-            <div class="form-group"><label class="form-label">Company Name</label><input class="form-control auto-upper" id="ocr_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()"/></div>
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <div style="display:flex;gap:6px;">
+                <input class="form-control auto-upper" id="ocr_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()" style="flex:1;"/>
+                <button class="btn btn-secondary btn-sm" onclick="lookupCompany('ocr')" title="Search company name online" style="white-space:nowrap;">🔍 Verify</button>
+              </div>
+              <div id="ocr_co_suggestions" style="display:none;margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;"></div>
+            </div>
             <div class="form-group"><label class="form-label">Full Name</label><input class="form-control auto-upper" id="ocr_name" placeholder="First and Last Name" oninput="this.value=this.value.toUpperCase()"/></div>
             <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control auto-upper" id="ocr_position" placeholder="Job title or designation" oninput="this.value=this.value.toUpperCase()"/></div>
             <div class="form-group">
@@ -359,7 +368,14 @@ textarea.form-control{resize:vertical;min-height:72px;}
     <div class="page-sub">Manually enter a new contact record</div>
     <div class="section-card" style="max-width:740px;">
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Company Name *</label><input class="form-control auto-upper" id="add_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="form-group">
+          <label class="form-label">Company Name *</label>
+          <div style="display:flex;gap:6px;">
+            <input class="form-control auto-upper" id="add_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()" style="flex:1;"/>
+            <button class="btn btn-secondary btn-sm" onclick="lookupCompany('add')" title="Search company name online" style="white-space:nowrap;">🔍 Verify</button>
+          </div>
+          <div id="add_co_suggestions" style="display:none;margin-top:6px;flex-wrap:wrap;gap:5px;"></div>
+        </div>
         <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control auto-upper" id="add_name" placeholder="First and Last Name" oninput="this.value=this.value.toUpperCase()"/></div>
         <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control auto-upper" id="add_position" placeholder="Job title or designation" oninput="this.value=this.value.toUpperCase()"/></div>
         <div class="form-group">
@@ -389,6 +405,9 @@ textarea.form-control{resize:vertical;min-height:72px;}
     <div class="section-card" style="max-width:600px;">
       <div class="section-title" style="margin-bottom:10px;">Connected Apps Script URL</div>
       <div style="background:var(--gray-100);border:1.5px solid var(--gray-200);border-radius:8px;padding:12px;font-family:monospace;font-size:.76rem;color:var(--maroon);word-break:break-all;" id="currentScriptUrl"></div>
+      <div class="divider"></div>
+      <div class="section-title" style="margin-bottom:8px;">🔍 Company Name Lookup</div>
+      <p style="font-size:.82rem;color:var(--gray-600);margin-bottom:4px;">After scanning a card, click <strong>Verify</strong> next to the Company field to search the internet for the correct full company name. Uses DuckDuckGo — free, no API key required.</p>
       <div class="divider"></div>
       <div class="section-title" style="margin-bottom:12px;">Google Sheet Columns (A–H)</div>
       <table style="font-size:.83rem;border-collapse:collapse;width:100%;">
@@ -460,6 +479,81 @@ textarea.form-control{resize:vertical;min-height:72px;}
 // ║  ⚙  SET YOUR APPS SCRIPT URL HERE                   ║
 // ╚══════════════════════════════════════════════════════╝
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza-2VH4965YMel2PPIBqRqx6k20QNP7urtuIOSxlkRlVs8tnWzW-U8H8kRSK2DHMGZ/exec';
+// ── AUTO COMPANY LOOKUP (runs after OCR, no click needed) ──
+async function autoLookupCompany() {
+  const co = document.getElementById('ocr_company').value.trim();
+  if (!co) return;
+  const el = document.getElementById('ocr_co_suggestions');
+  if (el) { el.style.display = 'flex'; el.innerHTML = '<span style="color:var(--gray-400);font-size:.78rem;">🔍 Verifying company name…</span>'; }
+  try {
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_company', query: co })
+    });
+    const json = await resp.json();
+    if (!json.success || !json.suggestions || json.suggestions.length === 0) {
+      if (el) el.style.display = 'none';
+      return;
+    }
+    const top = json.suggestions[0];
+    // If there's one strong match that contains the OCR company text → auto-fill
+    const coWords = co.toUpperCase().split(/\s+/);
+    const topWords = top.toUpperCase().split(/\s+/);
+    const overlap = coWords.filter(w => w.length > 2 && topWords.some(t => t.includes(w) || w.includes(t))).length;
+    if (json.suggestions.length === 1 || overlap >= Math.min(coWords.length, 2)) {
+      document.getElementById('ocr_company').value = top;
+      if (el) { el.style.display = 'flex'; el.innerHTML = '<span style="color:var(--green);font-size:.78rem;">✅ Company name auto-corrected from internet</span>'; }
+      setTimeout(() => { if (el) el.style.display = 'none'; }, 3000);
+    } else {
+      // Multiple options — show as clickable pills
+      if (el) {
+        el.style.display = 'flex';
+        el.innerHTML = '<span style="color:var(--gray-400);font-size:.75rem;width:100%;">Suggestions:</span>' +
+          json.suggestions.map(s =>
+            `<button class="co-suggest-btn" onclick="useCompanySuggestion('ocr','${s.replace(/'/g,"\\'")}')">${s}</button>`
+          ).join('');
+      }
+    }
+  } catch(e) {
+    if (el) el.style.display = 'none';
+  }
+}
+
+// ── MANUAL COMPANY LOOKUP ──────────────────────────────────
+async function lookupCompany(prefix) {
+  const q = document.getElementById(prefix + '_company').value.trim();
+  if (!q) { toast('Enter a company name first', 'error'); return; }
+  const el = document.getElementById(prefix + '_co_suggestions');
+  if (el) { el.innerHTML = '<span style="color:var(--gray-400);font-size:.78rem;">Searching…</span>'; el.style.display = 'block'; }
+  try {
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'lookup_company', query: q })
+    });
+    const json = await resp.json();
+    if (!json.success || !json.suggestions || json.suggestions.length === 0) {
+      if (el) el.innerHTML = '<span style="color:var(--gray-400);font-size:.78rem;">No suggestions found.</span>';
+      return;
+    }
+    if (el) {
+      el.innerHTML = json.suggestions.map(s =>
+        `<button class="co-suggest-btn" onclick="useCompanySuggestion('${prefix}','${s.replace(/'/g,"\\'")}')">
+          ${s}
+        </button>`
+      ).join('');
+    }
+  } catch(e) {
+    if (el) el.innerHTML = '<span style="color:var(--red);font-size:.78rem;">Lookup failed.</span>';
+  }
+}
+function useCompanySuggestion(prefix, name) {
+  document.getElementById(prefix + '_company').value = name.toUpperCase();
+  const el = document.getElementById(prefix + '_co_suggestions');
+  if (el) el.style.display = 'none';
+  toast('Company name updated!', 'success');
+}
 
 // ── STATE ──────────────────────────────────────────────
 let allContacts  = [];
@@ -785,8 +879,11 @@ async function runOCR() {
   document.getElementById('ocrDoneWrap').style.display  = 'none';
   document.getElementById('ocrBarFill').style.width     = '0%';
   document.getElementById('ocrStatusTxt').textContent   = 'Enhancing image…';
+
   try {
     const enhanced = await preprocessImage(capturedImg);
+
+    // ── TESSERACT OCR ──────────────────────────────────────
     document.getElementById('ocrStatusTxt').textContent = 'Starting…';
     const result = await Tesseract.recognize(enhanced, 'eng', {
       logger: m => {
@@ -802,11 +899,7 @@ async function runOCR() {
     // ── DUAL-TEXT STRATEGY ────────────────────────────────
     // 1. FULL text  → extract phones, emails, websites (need every digit/char)
     // 2. FILTERED text (confidence ≥ 40 lines) → classify name/company/position
-    //    (removes QR-code garbage and icon noise without losing structured data)
     const fullRawText = result.data.text;
-
-    // Use Tesseract's own line boundaries (respects two-column layouts better
-    // than our manual Y-bucket approach)
     const lineData = result.data.lines || [];
     let filteredText;
     if (lineData.length >= 2) {
@@ -816,7 +909,6 @@ async function runOCR() {
         .filter(l => l.length > 1 && l.replace(/[^a-zA-Z]/g,'').length >= 2)
         .join('\n');
     } else {
-      // Fallback: word-level reconstruction
       const goodWords = (result.data.words || []).filter(w => w.confidence >= 50 && w.text.trim().length > 0);
       if (goodWords.length >= 2) {
         const lineMap = {};
@@ -838,7 +930,6 @@ async function runOCR() {
     document.getElementById('btnRaw').style.display = 'inline-flex';
 
     const parsed = parseOCRText(rawText, fullRawText);
-    // Auto-fill — all text fields uppercase
     document.getElementById('ocr_company').value  = parsed['COMPANY'].toUpperCase();
     document.getElementById('ocr_name').value     = parsed['NAME'].toUpperCase();
     document.getElementById('ocr_position').value = parsed['POSITION'].toUpperCase();
@@ -852,6 +943,8 @@ async function runOCR() {
     document.getElementById('ocrProgWrap').style.display = 'none';
     document.getElementById('ocrDoneWrap').style.display = 'block';
     toast('Card read! Review and save.', 'success');
+    // Auto-lookup company name online to verify/correct it
+    autoLookupCompany();
   } catch (err) {
     document.getElementById('ocrStatusTxt').textContent = 'Failed — try Re-scan';
     toast('OCR failed: ' + err.message, 'error');
@@ -971,6 +1064,25 @@ function parseOCRText(rawText, fullText) {
   function containsWebsite(line) {
     return websites.some(w => line.toLowerCase().includes(w.toLowerCase().replace(/^https?:\/\//,'')));
   }
+  // "Common sense" check: does this text appear inside the email address or website domain?
+  // e.g. "Shine Gaz" → "shinegaz" → found in "shinegaz@gmail.com" → it's the company.
+  // e.g. "Packaging Depot Manila" → "packagingdepotmanila" → found in domain → company.
+  function appearsInContact(text) {
+    const condensed = text.toLowerCase().replace(/[\s\-_.]/g, '');
+    if (condensed.length < 3) return false;
+    const sources = [
+      ...emails.map(e => e.split('@')[0]),           // email prefix: "shinegaz"
+      ...emails.map(e => (e.split('@')[1]||'').split('.')[0]), // email domain base
+      ...websites.map(w => w.toLowerCase()
+          .replace(/^https?:\/\//,'').replace(/^www\./,'')
+          .split('/')[0].split('.')[0])              // website base: "shinegaz"
+    ];
+    return sources.some(s => {
+      const sc = s.replace(/[\s\-_.]/g,'');
+      // Match if either contains the other (min 4 chars to avoid false positives)
+      return sc.length >= 4 && condensed.length >= 4 && (sc.includes(condensed) || condensed.includes(sc));
+    });
+  }
 
   // ── 5. COLLECT ADDRESS LINES ───────────────────────────
   const addressLines = lines.filter(line =>
@@ -1008,7 +1120,20 @@ function parseOCRText(rawText, fullText) {
     'distribution','supply','express','global','alliance','industrial',
     'seaborne','metaformation','toolbox','wwe cargo','ap cargo',
     'adelante','integrated','apcargo',
-    // Stems — catch OCR dropping last 1-3 chars (e.g. "CORPORAT" for "CORPORATION")
+    // Common Philippine business type words
+    'depot','store','mart','shop','warehouse','hardware','pharmacy',
+    'clinic','hospital','school','academy','university','college',
+    'realty','properties','real estate','finance','bank','lending',
+    'builders','builder','contractor','contractors','printing','media','publishing','studio',
+    'foods','food','bakery','restaurant','catering','farm','agri',
+    'auto','motors','automotive','dealership','rental','leasing',
+    'trading','tradings','supplier','suppliers','importer','exporter',
+    'tech','technology','technologies','digital','online','networks',
+    'ventures','holdings','capital','investments','investment',
+    'hardware','electrical','plumbing','steel','metal','iron',
+    'gaz','gas','fuel','energy','power','solar','water','drainage',
+    'hub','zone','park','plaza','center','centre','point','spot',
+    // Stems
     'corporat','incorporat','distribut','manufactur','constructi',
     'internation','associati','foundat','consultanc','cooperativ'
   ];
@@ -1041,6 +1166,18 @@ function parseOCRText(rawText, fullText) {
     const hasRealWord = words.some(w => w.replace(/\./g,'').length > 1);
     return rightLen && hasRealWord && (hasInitial || words.every(w => /^[A-Z]/.test(w) || /^[a-z]/.test(w)));
   }
+  // Stricter: proper Title Case person name (e.g. "Aira Ordinado", "Juan F. dela Cruz")
+  function looksLikePerson(line) {
+    const clean = line.replace(/[^A-Za-z.\s'-]/g,'').trim();
+    const words = clean.split(/\s+/).filter(Boolean);
+    if (words.length < 2 || words.length > 5) return false;
+    if (hasCompanyKw(line) || hasPosKw(line)) return false;
+    // At least one word must be Title Case (starts uppercase, has lowercase)
+    const hasTitleCase = words.some(w => /^[A-Z][a-z]{1,}/.test(w));
+    // No word should be ALL CAPS and longer than 3 chars (ALL CAPS = company/acronym)
+    const noAllCapsWord = words.every(w => w.length <= 3 || w !== w.toUpperCase() || /^[A-Z]\.$/.test(w));
+    return hasTitleCase && noAllCapsWord;
+  }
 
   function hasCompanyKw(line) {
     const lo = line.toLowerCase().replace(/[\\\/|*]/g,'');
@@ -1062,7 +1199,34 @@ function parseOCRText(rawText, fullText) {
   const used = new Set();
   let company = '', position = '', name = '';
 
-  // FIND COMPANY — keyword match + expand to adjacent lines that are part of the same name
+  // FIND COMPANY — PASS 0: domain match (highest confidence)
+  // If a line's text appears inside the email prefix or website domain → it IS the company.
+  // Handles cases like "Shine Gaz" (email: shinegaz@gmail.com) with no company keywords.
+  cleanLines.forEach((line, i) => {
+    if (company) return;
+    const cand = line.replace(/^[^A-Za-z]+/, '').trim();
+    if (!looksLikePerson(cand) && appearsInContact(cand)) {
+      company = cand;
+      used.add(i);
+      // also try to absorb adjacent lines that are also part of company name
+      for (let j = i - 1; j >= Math.max(0, i - 2); j--) {
+        if (used.has(j)) break;
+        const prev = cleanLines[j].replace(/^[^A-Za-z]+/,'').trim();
+        if (!looksLikePerson(prev) && !hasPosKw(prev) && prev.length <= 40) {
+          company = prev + ' ' + company; used.add(j);
+        } else break;
+      }
+      for (let j = i + 1; j <= Math.min(cleanLines.length - 1, i + 2); j++) {
+        if (used.has(j)) break;
+        const next = cleanLines[j].replace(/^[^A-Za-z]+/,'').trim();
+        if (!looksLikePerson(next) && !hasPosKw(next) && !isTagline(next) && next.length <= 40) {
+          company = company + ' ' + next; used.add(j);
+        } else break;
+      }
+    }
+  });
+
+  // FIND COMPANY — PASS 1: keyword match + expand to adjacent lines
   cleanLines.forEach((line, i) => {
     if (company) return;
     if (!hasCompanyKw(line)) return;
@@ -1104,11 +1268,29 @@ function parseOCRText(rawText, fullText) {
       if (company || used.has(i)) return;
       const stripped = line.replace(/[^A-Za-z\s.&,-]/g,'').trim();
       const isAllCaps = stripped.length > 4 && stripped === stripped.toUpperCase();
-      if (isAllCaps && !looksLikeName(line)) {
+      if (isAllCaps && !looksLikeName(line) && !looksLikePerson(line)) {
         company = line.replace(/^[^A-Za-z]+/, '').trim();
         used.add(i);
       }
     });
+  }
+
+  // ── POST-CLASSIFICATION SWAP CHECK ─────────────────────
+  // Rule 1: name field matches email/website domain but company doesn't → swap
+  if (name && appearsInContact(name) && !appearsInContact(company || '')) {
+    const tmp = company; company = name; name = tmp || '';
+  }
+  // Rule 2: company looks like a person (Title Case, no keywords) → move to name
+  if (company && looksLikePerson(company) && !hasCompanyKw(company) && !appearsInContact(company)) {
+    if (name && (hasCompanyKw(name) || appearsInContact(name))) {
+      const tmp = company; company = name; name = tmp;
+    } else if (!name) {
+      name = company; company = '';
+    }
+  }
+  // Rule 3: name has company keywords and company is empty → move to company
+  if (name && hasCompanyKw(name) && !company) {
+    company = name; name = '';
   }
 
   // FIND POSITION — keyword match + expand adjacent lines (handles split titles like "SALES" + "MANAGER")
