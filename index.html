@@ -824,13 +824,17 @@ function parseOCRText(rawText) {
   }));
 
   // ── 2. EXTRACT WEBSITES ────────────────────────────────
-  const webRx = /(?:https?:\/\/)?(?:www\.)[^\s,;)\]]+/gi;
+  // Match: www.xxx or http(s)://xxx or bare domains ending in .com.ph / .com / .ph etc.
+  const webRx = /(?:https?:\/\/[^\s,;)\]]+|www\.[^\s,;)\]]+|[a-zA-Z0-9\-]+\.(?:com\.ph|net\.ph|org\.ph|com|net|org|ph)(?:\/[^\s,;)\]]*)?)/gi;
   const websites = [];
   let wm;
   while ((wm = webRx.exec(text)) !== null) {
     const w = wm[0].trim().replace(/[.,;:)>\]]+$/, '');
     const domain = w.replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0].toLowerCase();
-    if (w.length > 6 && !emailDomains.has(domain)) websites.push(w);
+    // Must look like a real domain (has a dot, not an email domain, not too short)
+    if (w.length > 5 && domain.includes('.') && !emailDomains.has(domain) && !emails.some(e => e.includes(domain))) {
+      websites.push(w);
+    }
   }
 
   // ── 3. EXTRACT PHONE NUMBERS ───────────────────────────
@@ -848,9 +852,19 @@ function parseOCRText(rawText) {
       phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
 
-  // Traditional (02) XXXX-XXXX
+  // Traditional (02) XXXX-XXXX with parens
   const tradRx = /\(\d{1,4}\)[\s.\-]*\d{3,4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/g;
-  while ((pm = tradRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
+  while ((pm = tradRx.exec(text)) !== null) {
+    if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
+      phoneMatches.push({ raw: pm[0], idx: pm.index });
+  }
+
+  // PH Landline without parens: 02 XXXX XXXX or 032 XXXX XXXX (0 + 1-2 digit area + 8 digits)
+  const ld0Rx = /\b0\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4}\b/g;
+  while ((pm = ld0Rx.exec(text)) !== null) {
+    if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
+      phoneMatches.push({ raw: pm[0], idx: pm.index });
+  }
 
   phoneMatches.sort((a, b) => a.idx - b.idx);
   const phones = phoneMatches.map(p => p.raw.trim());
@@ -896,8 +910,10 @@ function parseOCRText(rawText) {
   );
   let address = addressLines.join(' ').replace(/\s+/g,' ').trim();
   // Clean common OCR noise in addresses
-  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();  // remove "OO" OCR artifact
-  address = address.replace(/\s+\d\s*$/, '').trim();                        // remove trailing lone digit
+  address = address.replace(/^[^A-Za-z0-9]+/, '').trim();                   // strip leading icon noise [Q] etc
+  address = address.replace(/\[.*?\]/g, '').replace(/\s{2,}/g,' ').trim();  // remove [Q] [o] bracket noise
+  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();   // remove "OO" OCR artifact
+  address = address.replace(/\s+\d\s*$/, '').trim();                         // remove trailing lone digit
 
   // ── 6. CLEAN LINES (remove contact-info lines) ─────────
   const cleanLines = lines.filter(line => {
@@ -934,7 +950,13 @@ function parseOCRText(rawText) {
     'operations','branch manager','trade manager','sales manager',
     'proprietor','owner','clerk','assistant','secretary',
     'treasurer','procurement','purchaser','liaison',
-    'technician','engineer','analyst','auditor','designer'
+    'technician','engineer','analyst','auditor','designer',
+    // Additional titles
+    'foreman','compliance','inspector','estimator','encoder',
+    'cashier','bookkeeper','accountant','admin','administrator',
+    'driver','mechanic','welder','supervisor','staff',
+    'nurse','pharmacist','doctor','physician','dentist',
+    'architect','lawyer','attorney','notary'
   ];
 
   // Helper: does a line look like a PERSON'S name?
@@ -1024,25 +1046,34 @@ function parseOCRText(rawText) {
     used.add(i);
   });
 
-  // FIND NAME — proper-case 2–5 word line, strip trailing OCR noise
+  // FIND NAME — proper-case 2–5 word line, strip trailing and leading OCR noise
   cleanLines.forEach((line, i) => {
     if (name || used.has(i)) return;
     const clean = line.replace(/^[^A-Za-z]+/, '').trim();
     const words = clean.split(/\s+/).filter(Boolean);
     const noSpecial = !/[@#$%^&*+=[\]{};:"\/]/.test(clean);
     const noNum     = clean.replace(/[A-Za-z.\s'-]/g,'').length < 3;
-    const rightLen  = words.length >= 2 && words.length <= 6;
+    const rightLen  = words.length >= 2 && words.length <= 7;
     const hasLetter = /[A-Za-z]{2,}/.test(clean);
-    if (rightLen && noSpecial && noNum && hasLetter && clean.length < 60) {
+    if (rightLen && noSpecial && noNum && hasLetter && clean.length < 65) {
+      let nameWords = [...words];
+
       // Strip trailing noise: remove short words (1–2 chars) that aren't initials
-      const nameWords = [...words];
       while (nameWords.length > 2) {
         const last = nameWords[nameWords.length - 1];
         const isInitial = /^[A-Z]\.$/.test(last);
-        if (!isInitial && last.replace(/\./g,'').length <= 2) {
-          nameWords.pop();
-        } else break;
+        if (!isInitial && last.replace(/\./g,'').length <= 2) nameWords.pop();
+        else break;
       }
+
+      // Strip leading noise: if a middle initial exists and too many words precede it,
+      // keep only 1 word before the initial (the first name)
+      // e.g. "NEA HD JOAN F. HERNANDEZ" → initial "F." at idx 3 → keep from idx 2
+      const initIdx = nameWords.findIndex(w => /^[A-Z]\.$/.test(w));
+      if (initIdx > 2) {
+        nameWords = nameWords.slice(initIdx - 1);
+      }
+
       name = nameWords.join(' ');
       used.add(i);
     }
@@ -1067,9 +1098,17 @@ function parseOCRText(rawText) {
     if (/^632\d{8}$/.test(d))
       return '+63 2 ' + d.slice(3,7) + ' ' + d.slice(7,11);
 
-    // Other PH landlines: +63 XX XXXX XXXX (12 digits)
+    // Other PH landlines with +63 prefix: +63 XX XXXX XXXX (12 digits)
     if (/^63\d{10}$/.test(d))
       return '+63 ' + d.slice(2,4) + ' ' + d.slice(4,8) + ' ' + d.slice(8,12);
+
+    // PH landline with 0-prefix area: 02 XXXX XXXX (10 digits: 02XXXXXXXX)
+    if (/^02\d{8}$/.test(d))
+      return '+63 2 ' + d.slice(2,6) + ' ' + d.slice(6,10);
+
+    // PH landline with 0-prefix area: 0XX XXXX XXXX (11 digits)
+    if (/^0\d{10}$/.test(d))
+      return '+63 ' + d.slice(1,3) + ' ' + d.slice(3,7) + ' ' + d.slice(7,11);
 
     return cleaned;   // return cleaned (without "to XX") if no pattern matched
   }
