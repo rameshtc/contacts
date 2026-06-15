@@ -338,7 +338,7 @@ textarea.form-control{resize:vertical;min-height:72px;}
               <span class="form-hint">Mobile format: +63 9XX XXX XXXX</span>
             </div>
             <div class="form-group"><label class="form-label">Contact #2</label><input class="form-control" id="ocr_contact2" placeholder="+63 2 XXXX XXXX or landline"/></div>
-            <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="ocr_email" type="email" placeholder="email@domain.com"/></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="ocr_email" type="text" placeholder="email@domain.com"/></div>
             <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="ocr_website" placeholder="https://www.company.com"/></div>
             <div class="form-group"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="ocr_address" placeholder="Street, Barangay, City, Province" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
           </div>
@@ -541,16 +541,7 @@ async function submitAdd() {
 }
 
 async function saveOCRContact() {
-  const data = {
-    'COMPANY':       v('ocr_company'),
-    'NAME':          v('ocr_name'),
-    'POSITION':      v('ocr_position'),
-    'CONTACT#1':     v('ocr_contact1'),
-    'CONTACT#2':     v('ocr_contact2'),
-    'EMAIL ADDRESS': v('ocr_email'),
-    'WEBSITE':       v('ocr_website'),
-    'ADDRESS':       v('ocr_address')
-  };
+  const data = gatherForm('ocr');  // uppercase + consistent with Add/Edit forms
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
   showLoading('Saving contact…');
   try {
@@ -753,15 +744,51 @@ function retakePhoto() {
   startCamera();
 }
 
+// ── IMAGE PREPROCESSING (Grayscale + Contrast Boost) ──
+// Improves OCR accuracy without any API key or cost
+async function preprocessImage(dataUrl) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      // Upscale small images (Tesseract works better on larger images)
+      const scale = Math.max(1, Math.min(3, 1500 / Math.max(img.width, img.height)));
+      const w = Math.round(img.width  * scale);
+      const h = Math.round(img.height * scale);
+      const cvs = document.createElement('canvas');
+      cvs.width = w; cvs.height = h;
+      const ctx = cvs.getContext('2d');
+      // Smooth upscale
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
+      // Grayscale + contrast enhancement
+      const id = ctx.getImageData(0, 0, w, h);
+      const d  = id.data;
+      for (let i = 0; i < d.length; i += 4) {
+        // Luminosity grayscale
+        const gray = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        // Contrast: pull dark pixels darker, bright pixels brighter
+        const c = Math.min(255, Math.max(0, (gray - 128) * 1.7 + 128));
+        d[i] = d[i+1] = d[i+2] = c;
+      }
+      ctx.putImageData(id, 0, 0);
+      resolve(cvs.toDataURL('image/png'));
+    };
+    img.src = dataUrl;
+  });
+}
+
 // ── OCR ────────────────────────────────────────────────
 async function runOCR() {
   if (!capturedImg) { toast('Capture an image first', 'error'); return; }
   document.getElementById('ocrProgWrap').style.display  = 'block';
   document.getElementById('ocrDoneWrap').style.display  = 'none';
   document.getElementById('ocrBarFill').style.width     = '0%';
-  document.getElementById('ocrStatusTxt').textContent   = 'Starting…';
+  document.getElementById('ocrStatusTxt').textContent   = 'Enhancing image…';
   try {
-    const result = await Tesseract.recognize(capturedImg, 'eng', {
+    const enhanced = await preprocessImage(capturedImg);
+    document.getElementById('ocrStatusTxt').textContent = 'Starting…';
+    const result = await Tesseract.recognize(enhanced, 'eng', {
       logger: m => {
         if (m.status === 'recognizing text') {
           const pct = Math.round(m.progress * 100);
@@ -814,8 +841,11 @@ function parseOCRText(rawText) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 1);
 
   // ── 1. EXTRACT EMAILS ──────────────────────────────────
-  const emailRx = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-  const emails  = [...(text.match(emailRx) || [])];
+  // Loose: allow OCR spaces around @ and before TLD (e.g. "donna @intpackcorp .com")
+  const emailRxLoose = /[a-zA-Z0-9._%+\-]+\s*@\s*[a-zA-Z0-9.\-]+(?:\s*\.\s*[a-zA-Z]{2,})+/g;
+  const emails = [...new Set(
+    [...(text.match(emailRxLoose) || [])].map(e => e.replace(/\s+/g, ''))   // remove OCR spaces
+  )];
 
   // Build email domain exclusion set
   const emailDomains = new Set(emails.map(e => {
@@ -1039,29 +1069,48 @@ function parseOCRText(rawText) {
     });
   }
 
-  // FIND POSITION — keyword match, then clean trailing OCR noise
+  // FIND POSITION — keyword match + expand adjacent lines (handles split titles like "SALES" + "MANAGER")
   cleanLines.forEach((line, i) => {
     if (position || used.has(i)) return;
     if (!hasPosKw(line)) return;
-    let pos = line.trim();
+
+    const parts = [{ idx: i, text: line }];
+    used.add(i);
+
+    // Expand backward 1 line — catches modifier words (e.g. "SALES" before "MANAGER")
+    if (i > 0 && !used.has(i - 1)) {
+      const prev = cleanLines[i - 1];
+      if (!looksLikeName(prev) && !hasCompanyKw(prev) && !isTagline(prev) && prev.length <= 35) {
+        parts.unshift({ idx: i - 1, text: prev });
+        used.add(i - 1);
+      }
+    }
+    // Expand forward 1 line — catches trailing position words
+    if (i < cleanLines.length - 1 && !used.has(i + 1)) {
+      const next = cleanLines[i + 1];
+      if (!looksLikeName(next) && !hasCompanyKw(next) && !isTagline(next) && next.length <= 35) {
+        parts.push({ idx: i + 1, text: next });
+        used.add(i + 1);
+      }
+    }
+
+    let pos = parts.map(p => p.text.trim()).join(' ').replace(/\s+/g, ' ').trim();
     // Strip trailing " . WORD WORD" OCR artifacts (e.g. ". NTE RATED")
     pos = pos.replace(/\s*[.\-]\s*[A-Z]{2,}(\s+[A-Z]{2,})*\s*$/, '').trim();
-    // Strip trailing all-caps noise words that aren't position words
     const posWords = pos.split(/\s+/);
-    // Strip trailing 2-3 char all-caps noise (e.g. "HO", "RA")
+    // Strip trailing 2-3 char all-caps noise or lone digits
     while (posWords.length > 1) {
       const last = posWords[posWords.length - 1];
-      if (/^[A-Z]{2,3}$/.test(last) && !posKw.some(k => last.toLowerCase() === k)) posWords.pop();
+      if ((/^[A-Z]{2,3}$/.test(last) || /^\d+$/.test(last)) && !posKw.some(k => last.toLowerCase() === k)) posWords.pop();
       else break;
     }
-    // Strip leading 1-3 char noise (e.g. "ES" before "MANAGER" from OCR dropping "SAL")
+    // Strip leading 1-3 char noise (e.g. "ES" from OCR dropping "SAL" in "SALES")
     while (posWords.length > 1) {
       const first = posWords[0];
       if (first.replace(/\./g,'').length <= 3 && !posKw.some(k => first.toLowerCase().startsWith(k))) posWords.shift();
       else break;
     }
     position = posWords.join(' ');
-    used.add(i);
   });
 
   // FIND NAME — proper-case 2–5 word line, strip trailing and leading OCR noise
