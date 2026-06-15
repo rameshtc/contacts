@@ -6,230 +6,183 @@
 <title>RTC Client Contact System</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-/* ── Reset & Variables ─────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --maroon:#800020;
-  --maroon-dark:#5C0016;
-  --maroon-light:#a3002a;
-  --maroon-bg:#FDF0F3;
-  --white:#ffffff;
-  --gray-50:#F9FAFB;
-  --gray-100:#F3F4F6;
-  --gray-200:#E5E7EB;
-  --gray-400:#9CA3AF;
-  --gray-600:#4B5563;
-  --gray-800:#1F2937;
-  --green:#10B981;
-  --red:#EF4444;
-  --yellow:#F59E0B;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.1);
-  --shadow-md:0 4px 16px rgba(0,0,0,.12);
-  --shadow-lg:0 8px 32px rgba(0,0,0,.18);
-  --radius:10px;
-  --sidebar:240px;
-  --header:60px;
-  --transition:.2s ease;
+  --maroon:#800020;--maroon-dark:#5C0016;--maroon-bg:#FDF0F3;
+  --white:#ffffff;--gray-50:#F9FAFB;--gray-100:#F3F4F6;
+  --gray-200:#E5E7EB;--gray-400:#9CA3AF;--gray-600:#4B5563;--gray-800:#1F2937;
+  --green:#10B981;--red:#EF4444;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 16px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.18);--radius:10px;
+  --sidebar:240px;--header:60px;--transition:.2s ease;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;}
 
-/* ── Header ────────────────────────────────────────────── */
+/* Header */
 .header{position:fixed;top:0;left:0;right:0;height:var(--header);background:var(--maroon);display:flex;align-items:center;padding:0 20px;z-index:200;box-shadow:var(--shadow-md);}
 .header-logo{display:flex;align-items:center;gap:10px;color:var(--white);}
-.header-logo svg{flex-shrink:0;}
 .header-title{font-size:1rem;font-weight:700;letter-spacing:.3px;}
-.header-title span{font-weight:300;opacity:.85;font-size:.8rem;display:block;}
+.header-sub{font-weight:300;opacity:.85;font-size:.75rem;display:block;margin-top:1px;}
 .header-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
 .btn-icon{background:rgba(255,255,255,.15);border:none;color:var(--white);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
 .btn-icon:hover{background:rgba(255,255,255,.25);}
 .sync-status{font-size:.72rem;color:rgba(255,255,255,.75);margin-right:4px;}
 
-/* ── Sidebar ────────────────────────────────────────────── */
+/* Sidebar */
 .sidebar{position:fixed;top:var(--header);left:0;width:var(--sidebar);height:calc(100vh - var(--header));background:var(--white);border-right:1px solid var(--gray-200);overflow-y:auto;z-index:100;transition:transform var(--transition);}
 .sidebar-section{padding:16px 12px 8px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-radius:8px;margin:2px 8px;color:var(--gray-600);font-size:.88rem;font-weight:500;transition:var(--transition);border:none;background:none;width:calc(100% - 16px);text-align:left;}
 .nav-item:hover{background:var(--maroon-bg);color:var(--maroon);}
 .nav-item.active{background:var(--maroon-bg);color:var(--maroon);font-weight:600;}
-.nav-item svg{flex-shrink:0;opacity:.75;}
-.nav-item.active svg{opacity:1;}
 .nav-badge{margin-left:auto;background:var(--maroon);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px;}
 
-/* ── Main Content ───────────────────────────────────────── */
+/* Main */
 .main{margin-left:var(--sidebar);margin-top:var(--header);min-height:calc(100vh - var(--header));padding:28px 32px;}
-.view{display:none;}
-.view.active{display:block;}
+.view{display:none;} .view.active{display:block;}
 .page-title{font-size:1.4rem;font-weight:700;color:var(--gray-800);margin-bottom:4px;}
 .page-sub{font-size:.85rem;color:var(--gray-400);margin-bottom:24px;}
 
-/* ── Stat Cards ─────────────────────────────────────────── */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
+/* Stat Cards */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:16px;margin-bottom:28px;}
 .stat-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border-left:4px solid var(--maroon);}
-.stat-card .stat-val{font-size:2rem;font-weight:800;color:var(--maroon);}
-.stat-card .stat-lbl{font-size:.78rem;color:var(--gray-400);margin-top:2px;font-weight:500;}
+.stat-val{font-size:2rem;font-weight:800;color:var(--maroon);}
+.stat-lbl{font-size:.78rem;color:var(--gray-400);margin-top:2px;font-weight:500;}
 
-/* ── Card Section ───────────────────────────────────────── */
+/* Section Card */
 .section-card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .section-title{font-size:1rem;font-weight:700;color:var(--gray-800);}
 
-/* ── Toolbar ─────────────────────────────────────────────── */
+/* Toolbar */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .search-wrap{position:relative;flex:1;min-width:200px;}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none;}
 .search-input{width:100%;padding:9px 12px 9px 38px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.88rem;outline:none;transition:var(--transition);background:var(--white);}
 .search-input:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,.1);}
+
+/* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:var(--transition);}
-.btn-primary{background:var(--maroon);color:#fff;}
-.btn-primary:hover{background:var(--maroon-dark);}
-.btn-secondary{background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);}
-.btn-secondary:hover{background:var(--gray-200);}
-.btn-danger{background:var(--red);color:#fff;}
-.btn-danger:hover{background:#DC2626;}
+.btn-primary{background:var(--maroon);color:#fff;} .btn-primary:hover{background:var(--maroon-dark);}
+.btn-secondary{background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);} .btn-secondary:hover{background:var(--gray-200);}
+.btn-danger{background:var(--red);color:#fff;} .btn-danger:hover{background:#DC2626;}
 .btn-sm{padding:6px 12px;font-size:.78rem;}
-.btn-outline{background:transparent;color:var(--maroon);border:1.5px solid var(--maroon);}
-.btn-outline:hover{background:var(--maroon-bg);}
+.btn-outline{background:transparent;color:var(--maroon);border:1.5px solid var(--maroon);} .btn-outline:hover{background:var(--maroon-bg);}
 .toggle-wrap{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;}
 .toggle-wrap button{padding:8px 14px;border:none;background:var(--white);cursor:pointer;font-size:.82rem;font-weight:600;color:var(--gray-400);transition:var(--transition);}
 .toggle-wrap button.active{background:var(--maroon);color:#fff;}
 
-/* ── Table ───────────────────────────────────────────────── */
+/* Table */
 .table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:.85rem;}
-th{text-align:left;padding:10px 14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);white-space:nowrap;}
-td{padding:11px 14px;border-bottom:1px solid var(--gray-100);vertical-align:middle;}
+table{width:100%;border-collapse:collapse;font-size:.84rem;}
+th{text-align:left;padding:10px 12px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);white-space:nowrap;}
+td{padding:10px 12px;border-bottom:1px solid var(--gray-100);vertical-align:middle;}
 tr:hover td{background:var(--maroon-bg);}
-.cell-company{font-weight:600;color:var(--gray-800);}
-.cell-name{color:var(--gray-700);}
-.cell-pos{color:var(--gray-400);font-size:.8rem;}
-.cell-contact{color:var(--gray-600);font-family:monospace;font-size:.82rem;}
-.cell-email a{color:var(--maroon);text-decoration:none;font-size:.82rem;}
-.cell-email a:hover{text-decoration:underline;}
-.action-btns{display:flex;gap:6px;}
-.btn-edit{background:var(--maroon-bg);color:var(--maroon);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:600;transition:var(--transition);}
+.cell-company{font-weight:700;color:var(--gray-800);}
+.cell-pos{color:var(--gray-500);font-size:.8rem;}
+.cell-contact{font-family:monospace;font-size:.8rem;color:var(--gray-600);}
+.cell-link a{color:var(--maroon);text-decoration:none;font-size:.8rem;} .cell-link a:hover{text-decoration:underline;}
+.action-btns{display:flex;gap:5px;}
+.btn-edit{background:var(--maroon-bg);color:var(--maroon);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;transition:var(--transition);}
 .btn-edit:hover{background:var(--maroon);color:#fff;}
-.btn-del{background:#FEF2F2;color:var(--red);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.78rem;font-weight:600;transition:var(--transition);}
+.btn-del{background:#FEF2F2;color:var(--red);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;transition:var(--transition);}
 .btn-del:hover{background:var(--red);color:#fff;}
 .empty-row td{text-align:center;padding:40px;color:var(--gray-400);font-size:.9rem;}
 
-/* ── Contact Cards ───────────────────────────────────────── */
+/* Cards */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
 .contact-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1.5px solid var(--gray-200);transition:var(--transition);}
 .contact-card:hover{box-shadow:var(--shadow-md);border-color:var(--maroon);transform:translateY(-2px);}
-.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
 .card-avatar{width:44px;height:44px;border-radius:10px;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;}
 .card-name{font-weight:700;font-size:.95rem;color:var(--gray-800);}
 .card-pos{font-size:.78rem;color:var(--gray-400);margin-top:2px;}
 .card-company{font-size:.82rem;color:var(--maroon);font-weight:600;margin-bottom:10px;}
-.card-info{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
-.card-info-row{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--gray-600);}
-.card-info-row svg{flex-shrink:0;color:var(--gray-400);}
-.card-info-row a{color:var(--maroon);text-decoration:none;}
+.card-info{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.card-row{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--gray-600);}
+.card-row svg{flex-shrink:0;color:var(--gray-400);}
+.card-row a{color:var(--maroon);text-decoration:none;} .card-row a:hover{text-decoration:underline;}
 .card-actions{display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--gray-100);}
 
-/* ── Forms ───────────────────────────────────────────────── */
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
-.form-group{display:flex;flex-direction:column;gap:6px;}
-.form-label{font-size:.8rem;font-weight:700;color:var(--gray-600);letter-spacing:.3px;}
-.form-control{padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.88rem;outline:none;transition:var(--transition);font-family:inherit;background:var(--white);}
+/* Forms */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:.78rem;font-weight:700;color:var(--gray-600);letter-spacing:.3px;}
+.form-hint{font-size:.72rem;color:var(--gray-400);margin-top:2px;}
+.form-control{padding:10px 13px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.87rem;outline:none;transition:var(--transition);font-family:inherit;background:var(--white);}
 .form-control:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,.1);}
 .form-control::placeholder{color:var(--gray-400);}
-.form-actions{display:flex;gap:10px;margin-top:8px;}
+.form-actions{display:flex;gap:10px;margin-top:10px;}
+.divider{height:1px;background:var(--gray-200);margin:16px 0;}
 
-/* ── Capture View ────────────────────────────────────────── */
+/* Capture */
 .capture-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
-@media(max-width:800px){.capture-layout{grid-template-columns:1fr;}}
-.camera-box{background:#000;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;position:relative;display:flex;align-items:center;justify-content:center;}
-.camera-box video,.camera-box canvas{width:100%;height:100%;object-fit:cover;}
-.camera-placeholder{text-align:center;color:rgba(255,255,255,.5);}
-.camera-placeholder svg{margin-bottom:10px;opacity:.4;}
-.camera-placeholder p{font-size:.85rem;}
-.camera-controls{display:flex;gap:10px;margin-top:12px;justify-content:center;}
-.ocr-progress{margin:12px 0;}
-.ocr-bar{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;margin-top:6px;}
+.camera-box{background:#0a0a0a;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;position:relative;display:flex;align-items:center;justify-content:center;}
+.camera-box video{width:100%;height:100%;object-fit:cover;}
+.cam-placeholder{text-align:center;color:rgba(255,255,255,.4);}
+.cam-placeholder p{font-size:.82rem;margin-top:8px;}
+.camera-controls{display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;}
+.ocr-bar-wrap{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;margin:6px 0;}
 .ocr-bar-fill{height:100%;background:var(--maroon);border-radius:3px;transition:width .3s ease;width:0%;}
-.ocr-status{font-size:.8rem;color:var(--gray-400);margin-top:4px;}
-.captured-preview{width:100%;border-radius:var(--radius);margin-bottom:12px;max-height:200px;object-fit:contain;border:1px solid var(--gray-200);}
+.ocr-status{font-size:.78rem;color:var(--gray-400);}
+.captured-img{width:100%;border-radius:8px;margin-bottom:10px;max-height:200px;object-fit:contain;border:1px solid var(--gray-200);}
 
-/* ── Modal ───────────────────────────────────────────────── */
+/* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:560px;box-shadow:var(--shadow-lg);animation:modalIn .2s ease;}
-@keyframes modalIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-title{font-size:1.1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.modal{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mIn .2s ease;}
+@keyframes mIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{font-size:1.05rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-200);}
-
-/* ── Confirm Modal ───────────────────────────────────────── */
 .confirm-modal{max-width:400px;text-align:center;}
-.confirm-modal .confirm-icon{width:56px;height:56px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-.confirm-modal p{font-size:.9rem;color:var(--gray-600);margin-bottom:4px;}
-.confirm-modal strong{display:block;font-size:1rem;color:var(--gray-800);margin-bottom:16px;}
+.confirm-icon{width:56px;height:56px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
 
-/* ── Toast ───────────────────────────────────────────────── */
+/* Toast */
 .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:900;display:flex;flex-direction:column;gap:8px;}
-.toast{padding:12px 18px;border-radius:10px;color:#fff;font-size:.85rem;font-weight:600;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;animation:toastIn .25s ease;max-width:320px;}
-@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
-.toast.success{background:var(--green);}
-.toast.error{background:var(--red);}
-.toast.info{background:var(--maroon);}
+.toast{padding:11px 16px;border-radius:10px;color:#fff;font-size:.84rem;font-weight:600;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;animation:tIn .25s ease;max-width:300px;}
+@keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{background:var(--green);} .toast.error{background:var(--red);} .toast.info{background:var(--maroon);}
 
-/* ── Recent Table (Dashboard) ────────────────────────────── */
-.recent-table{width:100%;border-collapse:collapse;font-size:.84rem;}
-.recent-table th{text-align:left;padding:8px 12px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);}
-.recent-table td{padding:10px 12px;border-bottom:1px solid var(--gray-100);}
-.recent-table tr:last-child td{border-bottom:none;}
+/* Recent table */
+.rtable{width:100%;border-collapse:collapse;font-size:.83rem;}
+.rtable th{text-align:left;padding:8px 10px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);}
+.rtable td{padding:9px 10px;border-bottom:1px solid var(--gray-100);}
+.rtable tr:last-child td{border-bottom:none;}
 
-/* ── Spinner ─────────────────────────────────────────────── */
-.spinner{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* Loading */
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:999;}
 .loading-box{background:var(--white);border-radius:12px;padding:28px 36px;text-align:center;box-shadow:var(--shadow-lg);}
-.loading-box .spinner-big{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--maroon);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
-.loading-box p{font-size:.9rem;color:var(--gray-600);}
+.spinner-big{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--maroon);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Responsive ──────────────────────────────────────────── */
+/* Responsive */
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%);}
-  .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0;padding:16px;}
-  .stats-grid{grid-template-columns:repeat(2,1fr);}
-  .menu-btn{display:flex!important;}
-  .capture-layout{grid-template-columns:1fr;}
+  .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:16px;} .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .capture-layout{grid-template-columns:1fr;} .menu-btn{display:flex!important;}
 }
 .menu-btn{display:none;}
 .overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
 .overlay-bg.open{display:block;}
-
-/* ── Misc ────────────────────────────────────────────────── */
-.divider{height:1px;background:var(--gray-200);margin:16px 0;}
-.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:600;}
-.tag-info{background:var(--maroon-bg);color:var(--maroon);}
-.no-data{text-align:center;padding:60px 20px;color:var(--gray-400);}
-.no-data svg{margin-bottom:12px;opacity:.3;}
-.no-data p{font-size:.9rem;}
+.no-data{text-align:center;padding:48px 20px;color:var(--gray-400);}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     HEADER
-═══════════════════════════════════════════════════════════ -->
+<!-- HEADER -->
 <header class="header">
   <button class="btn-icon menu-btn" onclick="toggleSidebar()" style="margin-right:8px;">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="header-logo">
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-      <rect width="30" height="30" rx="7" fill="rgba(255,255,255,.2)"/>
-      <text x="15" y="21" text-anchor="middle" fill="#fff" font-weight="800" font-size="13" font-family="sans-serif">RTC</text>
-    </svg>
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,.2)"/><text x="16" y="22" text-anchor="middle" fill="#fff" font-weight="800" font-size="13" font-family="sans-serif">RTC</text></svg>
     <div>
       <div class="header-title">RTC Client Contact System</div>
-      <span class="header-title"><span id="contactCountLabel">Loading…</span></span>
+      <span class="header-sub" id="contactCountLabel">Loading…</span>
     </div>
   </div>
   <div class="header-actions">
     <span class="sync-status" id="syncStatus"></span>
-    <button class="btn-icon" onclick="loadContacts(true)" title="Sync with Google Sheets">
+    <button class="btn-icon" onclick="loadContacts(true)" title="Sync">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
     </button>
     <button class="btn-icon" onclick="navigate('settings')" title="Settings">
@@ -238,71 +191,43 @@ tr:hover td{background:var(--maroon-bg);}
   </div>
 </header>
 
-<!-- Mobile sidebar backdrop -->
 <div class="overlay-bg" id="overlayBg" onclick="toggleSidebar()"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     SIDEBAR
-═══════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-section">Menu</div>
-
   <button class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-    Dashboard
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
   </button>
-
   <button class="nav-item" id="nav-contacts" onclick="navigate('contacts')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Contacts
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts
     <span class="nav-badge" id="navBadge">0</span>
   </button>
-
   <button class="nav-item" id="nav-capture" onclick="navigate('capture')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-    Capture Card
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture Card
   </button>
-
   <button class="nav-item" id="nav-add" onclick="navigate('add')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    Add Contact
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add Contact
   </button>
-
   <div class="divider"></div>
   <div class="sidebar-section">System</div>
-
   <button class="nav-item" id="nav-settings" onclick="navigate('settings')">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Settings
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
   </button>
 </nav>
 
-<!-- ══════════════════════════════════════════════════════════
-     MAIN CONTENT
-═══════════════════════════════════════════════════════════ -->
+<!-- MAIN -->
 <main class="main">
 
-  <!-- ── DASHBOARD ─────────────────────────────────────── -->
+  <!-- DASHBOARD -->
   <div class="view active" id="view-dashboard">
     <div class="page-title">Dashboard</div>
     <div class="page-sub">Overview of your contact database</div>
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-val" id="statTotal">—</div>
-        <div class="stat-lbl">Total Contacts</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="statCompanies">—</div>
-        <div class="stat-lbl">Companies</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="statWithEmail">—</div>
-        <div class="stat-lbl">With Email</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="statWithPhone">—</div>
-        <div class="stat-lbl">With Phone</div>
-      </div>
+      <div class="stat-card"><div class="stat-val" id="statTotal">—</div><div class="stat-lbl">Total Contacts</div></div>
+      <div class="stat-card"><div class="stat-val" id="statCompanies">—</div><div class="stat-lbl">Companies</div></div>
+      <div class="stat-card"><div class="stat-val" id="statWithEmail">—</div><div class="stat-lbl">With Email</div></div>
+      <div class="stat-card"><div class="stat-val" id="statWithPhone">—</div><div class="stat-lbl">With Phone</div></div>
     </div>
     <div class="section-card">
       <div class="section-header">
@@ -310,86 +235,66 @@ tr:hover td{background:var(--maroon-bg);}
         <button class="btn btn-outline btn-sm" onclick="navigate('contacts')">View All</button>
       </div>
       <div class="table-wrap">
-        <table class="recent-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Contact</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody id="recentBody">
-            <tr><td colspan="5" style="text-align:center;padding:28px;color:var(--gray-400)">Loading…</td></tr>
-          </tbody>
+        <table class="rtable">
+          <thead><tr><th>Company</th><th>Name</th><th>Position</th><th>Tel / Mobile</th><th>Email</th></tr></thead>
+          <tbody id="recentBody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">Loading…</td></tr></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- ── CONTACTS ───────────────────────────────────────── -->
+  <!-- CONTACTS -->
   <div class="view" id="view-contacts">
     <div class="page-title">Contacts</div>
     <div class="page-sub">All records synced from Google Sheets</div>
     <div class="toolbar">
       <div class="search-wrap">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" id="searchInput" type="text" placeholder="Search by name, company, email…" oninput="doSearch()"/>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search name, company, email, phone…" oninput="doSearch()"/>
       </div>
       <div class="toggle-wrap">
         <button id="btnTable" class="active" onclick="setContactView('table')">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          Table
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> Table
         </button>
         <button id="btnCards" onclick="setContactView('cards')">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Cards
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Cards
         </button>
       </div>
       <button class="btn btn-primary" onclick="navigate('add')">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Contact
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Contact
       </button>
     </div>
-
-    <!-- Table View -->
+    <!-- Table -->
     <div class="section-card" id="tableView">
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Contact #1</th>
-              <th>Contact #2</th>
-              <th>Email</th>
-              <th>Actions</th>
+              <th>Company</th><th>Name</th><th>Position</th>
+              <th>Tel / Mobile</th><th>Contact #2</th>
+              <th>Email</th><th>Website</th><th>Actions</th>
             </tr>
           </thead>
           <tbody id="contactsTableBody"></tbody>
         </table>
       </div>
     </div>
-
-    <!-- Cards View -->
+    <!-- Cards -->
     <div id="cardsView" style="display:none;">
       <div class="cards-grid" id="contactsCardsGrid"></div>
     </div>
   </div>
 
-  <!-- ── CAPTURE CARD ───────────────────────────────────── -->
+  <!-- CAPTURE -->
   <div class="view" id="view-capture">
     <div class="page-title">Capture Business Card</div>
-    <div class="page-sub">Point camera at a business card — capture, OCR, then save</div>
+    <div class="page-sub">Point camera at a calling card → Capture → OCR auto-fills → Save</div>
     <div class="capture-layout">
-
-      <!-- Camera Panel -->
+      <!-- Camera -->
       <div>
         <div class="camera-box" id="cameraBox">
-          <div class="camera-placeholder" id="cameraPlaceholder">
-            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="cam-placeholder" id="camPlaceholder">
+            <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             <p>Camera not started</p>
           </div>
           <video id="cameraVideo" autoplay playsinline style="display:none;width:100%;height:100%;object-fit:cover;"></video>
@@ -397,71 +302,68 @@ tr:hover td{background:var(--maroon-bg);}
         </div>
         <div class="camera-controls">
           <button class="btn btn-secondary" id="btnStartCam" onclick="startCamera()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            Start Camera
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Start Camera
           </button>
           <button class="btn btn-primary" id="btnCapture" onclick="captureFrame()" style="display:none;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Capture
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture
           </button>
           <button class="btn btn-secondary" id="btnStopCam" onclick="stopCamera()" style="display:none;">Stop</button>
         </div>
-        <!-- Captured image preview -->
-        <div id="capturedPreviewWrap" style="margin-top:12px;display:none;">
-          <img id="capturedPreview" class="captured-preview" alt="Captured"/>
-          <div class="ocr-progress" id="ocrProgress" style="display:none;">
-            <div style="font-size:.8rem;font-weight:600;color:var(--gray-600);">Running OCR…</div>
-            <div class="ocr-bar"><div class="ocr-bar-fill" id="ocrBarFill"></div></div>
+        <!-- Preview & OCR -->
+        <div id="capturedWrap" style="margin-top:14px;display:none;">
+          <img id="capturedPreview" class="captured-img" alt="Captured card"/>
+          <div id="ocrProgressWrap" style="display:none;">
+            <div style="font-size:.8rem;font-weight:600;color:var(--gray-600);margin-bottom:4px;">Running OCR…</div>
+            <div class="ocr-bar-wrap"><div class="ocr-bar-fill" id="ocrBarFill"></div></div>
             <div class="ocr-status" id="ocrStatusText">Initializing…</div>
           </div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="btn btn-primary btn-sm" id="btnRunOcr" onclick="runOCR()">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              Run OCR
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Run OCR
             </button>
             <button class="btn btn-secondary btn-sm" onclick="retakePhoto()">Retake</button>
           </div>
         </div>
       </div>
-
-      <!-- OCR Result Form Panel -->
+      <!-- OCR Form -->
       <div>
         <div class="section-card" style="margin-bottom:0;">
-          <div class="section-title" style="margin-bottom:16px;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Parsed Contact Info
-          </div>
-          <p style="font-size:.8rem;color:var(--gray-400);margin-bottom:16px;">Review and correct the auto-filled fields before saving.</p>
-          <div class="form-grid" style="grid-template-columns:1fr;">
+          <div class="section-title" style="margin-bottom:4px;">Parsed Contact Info</div>
+          <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:14px;">Review and correct before saving. OCR is not perfect — always double-check names and numbers.</p>
+          <div style="display:flex;flex-direction:column;gap:12px;">
             <div class="form-group">
-              <label class="form-label">Company</label>
-              <input class="form-control" id="ocr_company" placeholder="Company name"/>
+              <label class="form-label">Company Name</label>
+              <input class="form-control" id="ocr_company" placeholder="Company / Organization"/>
             </div>
             <div class="form-group">
-              <label class="form-label">Name</label>
-              <input class="form-control" id="ocr_name" placeholder="Full name"/>
+              <label class="form-label">Full Name</label>
+              <input class="form-control" id="ocr_name" placeholder="First and Last Name"/>
             </div>
             <div class="form-group">
               <label class="form-label">Position / Title</label>
-              <input class="form-control" id="ocr_position" placeholder="Job title or position"/>
+              <input class="form-control" id="ocr_position" placeholder="Job title or designation"/>
             </div>
             <div class="form-group">
-              <label class="form-label">Contact #1</label>
-              <input class="form-control" id="ocr_contact1" placeholder="Mobile or phone #1"/>
+              <label class="form-label">Telephone / Mobile</label>
+              <input class="form-control" id="ocr_contact1" placeholder="+63 9XX XXX XXXX or (02) XXXX-XXXX"/>
+              <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
             </div>
             <div class="form-group">
               <label class="form-label">Contact #2</label>
-              <input class="form-control" id="ocr_contact2" placeholder="Mobile or phone #2"/>
+              <input class="form-control" id="ocr_contact2" placeholder="+63 9XX XXX XXXX or landline"/>
             </div>
             <div class="form-group">
               <label class="form-label">Email Address</label>
               <input class="form-control" id="ocr_email" type="email" placeholder="email@domain.com"/>
             </div>
+            <div class="form-group">
+              <label class="form-label">Website</label>
+              <input class="form-control" id="ocr_website" placeholder="https://www.company.com"/>
+            </div>
           </div>
           <div class="form-actions" style="margin-top:16px;">
             <button class="btn btn-primary" onclick="saveOCRContact()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              Save to Google Sheets
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save to Google Sheets
             </button>
             <button class="btn btn-secondary" onclick="clearOCRForm()">Clear</button>
           </div>
@@ -470,111 +372,100 @@ tr:hover td{background:var(--maroon-bg);}
     </div>
   </div>
 
-  <!-- ── ADD CONTACT ────────────────────────────────────── -->
+  <!-- ADD CONTACT -->
   <div class="view" id="view-add">
     <div class="page-title">Add Contact</div>
     <div class="page-sub">Manually enter a new contact record</div>
-    <div class="section-card" style="max-width:700px;">
+    <div class="section-card" style="max-width:720px;">
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Company *</label>
+          <label class="form-label">Company Name *</label>
           <input class="form-control" id="add_company" placeholder="Company / Organization"/>
         </div>
         <div class="form-group">
-          <label class="form-label">Name *</label>
-          <input class="form-control" id="add_name" placeholder="Full name"/>
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" id="add_name" placeholder="First and Last Name"/>
         </div>
         <div class="form-group">
           <label class="form-label">Position / Title</label>
-          <input class="form-control" id="add_position" placeholder="Job title"/>
+          <input class="form-control" id="add_position" placeholder="Job title or designation"/>
         </div>
         <div class="form-group">
-          <label class="form-label">Contact #1</label>
-          <input class="form-control" id="add_contact1" placeholder="09XX-XXX-XXXX"/>
+          <label class="form-label">Telephone / Mobile</label>
+          <input class="form-control" id="add_contact1" placeholder="+63 9XX XXX XXXX"/>
+          <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
         </div>
         <div class="form-group">
           <label class="form-label">Contact #2</label>
-          <input class="form-control" id="add_contact2" placeholder="Landline or alternate"/>
+          <input class="form-control" id="add_contact2" placeholder="+63 9XX XXX XXXX or landline"/>
         </div>
         <div class="form-group">
           <label class="form-label">Email Address</label>
           <input class="form-control" id="add_email" type="email" placeholder="email@domain.com"/>
         </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Website</label>
+          <input class="form-control" id="add_website" placeholder="https://www.company.com"/>
+        </div>
       </div>
       <div class="divider"></div>
       <div class="form-actions">
         <button class="btn btn-primary" onclick="submitAdd()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          Save Contact
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save Contact
         </button>
         <button class="btn btn-secondary" onclick="clearAddForm()">Clear</button>
       </div>
     </div>
   </div>
 
-  <!-- ── SETTINGS ───────────────────────────────────────── -->
+  <!-- SETTINGS -->
   <div class="view" id="view-settings">
     <div class="page-title">Settings</div>
-    <div class="page-sub">Configure your Google Apps Script Web App URL</div>
+    <div class="page-sub">System configuration</div>
     <div class="section-card" style="max-width:600px;">
-      <div class="section-title" style="margin-bottom:16px;">Apps Script Web App URL</div>
-      <p style="font-size:.85rem;color:var(--gray-600);margin-bottom:16px;line-height:1.6;">
-        This is the URL from your deployed Google Apps Script Web App.
-        To update it, edit <code style="background:var(--gray-100);padding:2px 6px;border-radius:4px;font-size:.82rem;">SCRIPT_URL</code>
-        at the top of <code style="background:var(--gray-100);padding:2px 6px;border-radius:4px;font-size:.82rem;">index.html</code> and re-upload to GitHub.
-      </p>
-      <div style="background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:14px;font-family:monospace;font-size:.82rem;color:var(--maroon);word-break:break-all;" id="currentScriptUrl"></div>
-
+      <div class="section-title" style="margin-bottom:12px;">Connected Apps Script</div>
+      <div style="background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:12px;font-family:monospace;font-size:.78rem;color:var(--maroon);word-break:break-all;" id="currentScriptUrl"></div>
       <div class="divider"></div>
-      <div class="section-title" style="margin-bottom:12px;">How to Deploy Apps Script</div>
-      <ol style="font-size:.85rem;color:var(--gray-600);line-height:2;padding-left:20px;">
-        <li>Open your Google Sheet → <strong>Extensions → Apps Script</strong></li>
-        <li>Delete the default code, paste the contents of <code>apps-script.gs</code></li>
-        <li>Save (Ctrl+S), then click <strong>Deploy → New Deployment</strong></li>
-        <li>Type: <strong>Web App</strong> | Execute as: <strong>Me</strong> | Access: <strong>Anyone</strong></li>
-        <li>Click <strong>Deploy</strong>, authorize, copy the Web App URL</li>
-        <li>Paste the URL as <code>SCRIPT_URL</code> in <code>index.html</code> and push to GitHub</li>
-      </ol>
+      <div class="section-title" style="margin-bottom:12px;">Google Sheet Columns (A–G)</div>
+      <table style="font-size:.83rem;border-collapse:collapse;width:100%;">
+        <thead><tr style="background:var(--gray-100);">
+          <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;color:var(--gray-400);">Column</th>
+          <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;color:var(--gray-400);">Header (exact)</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">A</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">COMPANY</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">B</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">NAME</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">C</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">POSITION</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">D</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">CONTACT#1</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">E</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">CONTACT#2</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">F</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">EMAIL ADDRESS</td></tr>
+          <tr><td style="padding:7px 10px;font-weight:600;">G</td><td style="padding:7px 10px;font-family:monospace;">WEBSITE</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-</main><!-- /main -->
+</main>
 
-<!-- ══════════════════════════════════════════════════════════
-     EDIT MODAL
-═══════════════════════════════════════════════════════════ -->
+<!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-title">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit Contact
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Contact
     </div>
     <input type="hidden" id="edit_row"/>
     <div class="form-grid">
+      <div class="form-group"><label class="form-label">Company Name</label><input class="form-control" id="edit_company"/></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="edit_name"/></div>
+      <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control" id="edit_position"/></div>
       <div class="form-group">
-        <label class="form-label">Company</label>
-        <input class="form-control" id="edit_company"/>
+        <label class="form-label">Telephone / Mobile</label>
+        <input class="form-control" id="edit_contact1" placeholder="+63 9XX XXX XXXX"/>
+        <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Name</label>
-        <input class="form-control" id="edit_name"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Position / Title</label>
-        <input class="form-control" id="edit_position"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contact #1</label>
-        <input class="form-control" id="edit_contact1"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contact #2</label>
-        <input class="form-control" id="edit_contact2"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-control" id="edit_email" type="email"/>
-      </div>
+      <div class="form-group"><label class="form-label">Contact #2</label><input class="form-control" id="edit_contact2"/></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="edit_email" type="email"/></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Website</label><input class="form-control" id="edit_website" placeholder="https://www.company.com"/></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
@@ -583,88 +474,66 @@ tr:hover td{background:var(--maroon-bg);}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     DELETE CONFIRM MODAL
-═══════════════════════════════════════════════════════════ -->
+<!-- DELETE MODAL -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal confirm-modal">
     <div class="confirm-icon">
       <svg width="24" height="24" fill="none" stroke="#EF4444" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
     </div>
     <div class="modal-title" style="justify-content:center;">Delete Contact?</div>
-    <p>You are about to delete:</p>
-    <strong id="deleteContactName"></strong>
+    <p style="font-size:.88rem;color:var(--gray-600);margin-bottom:4px;">You are about to delete:</p>
+    <strong id="deleteContactName" style="display:block;font-size:1rem;margin-bottom:16px;"></strong>
     <input type="hidden" id="delete_row"/>
     <div class="modal-footer" style="justify-content:center;">
       <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
-      <button class="btn btn-danger" onclick="submitDelete()">Delete</button>
+      <button class="btn btn-danger" onclick="submitDelete()">Yes, Delete</button>
     </div>
   </div>
 </div>
 
-<!-- Toast container -->
 <div class="toast-wrap" id="toastWrap"></div>
-
-<!-- Loading overlay -->
 <div class="loading-overlay" id="loadingOverlay" style="display:none;">
-  <div class="loading-box">
-    <div class="spinner-big"></div>
-    <p id="loadingText">Loading contacts…</p>
-  </div>
+  <div class="loading-box"><div class="spinner-big"></div><p id="loadingText">Loading…</p></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════════════
      JAVASCRIPT
-═══════════════════════════════════════════════════════════ -->
+════════════════════════════════════════════════════════════ -->
 <script>
 // ╔══════════════════════════════════════════════════════════╗
-// ║  ⚙  CONFIGURATION — Edit this before uploading          ║
+// ║  ⚙  CONFIGURATION                                        ║
 // ╚══════════════════════════════════════════════════════════╝
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza-2VH4965YMel2PPIBqRqx6k20QNP7urtuIOSxlkRlVs8tnWzW-U8H8kRSK2DHMGZ/exec';
 
+// ── STATE ──────────────────────────────────────────────────
+let allContacts  = [];
+let filtered     = [];
+let contactView  = 'table';
+let cameraStream = null;
+let capturedImg  = null;
 
-// ════════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════════
-let allContacts   = [];
-let filtered      = [];
-let contactView   = 'table'; // 'table' | 'cards'
-let cameraStream  = null;
-let capturedImage = null;  // base64 data URL of captured frame
-
-
-// ════════════════════════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════════════════════════
+// ── INIT ───────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('currentScriptUrl').textContent = SCRIPT_URL;
   loadContacts();
 });
 
-
-// ════════════════════════════════════════════════════════════
-//  NAVIGATION
-// ════════════════════════════════════════════════════════════
+// ── NAVIGATION ─────────────────────────────────────────────
 function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + view).classList.add('active');
-  const navEl = document.getElementById('nav-' + view);
-  if (navEl) navEl.classList.add('active');
-  // Close mobile sidebar
+  const nav = document.getElementById('nav-' + view);
+  if (nav) nav.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlayBg').classList.remove('open');
 }
-
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('overlayBg').classList.toggle('open');
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  DATA — FETCH ALL CONTACTS
-// ════════════════════════════════════════════════════════════
+// ── LOAD CONTACTS ──────────────────────────────────────────
 async function loadContacts(showToast = false) {
   setSync('Syncing…');
   try {
@@ -680,24 +549,18 @@ async function loadContacts(showToast = false) {
     if (showToast) toast('Synced with Google Sheets', 'success');
   } catch (err) {
     setSync('');
-    toast('Failed to load: ' + err.message, 'error');
+    toast('Sync failed: ' + err.message, 'error');
   }
 }
-
 function setSync(msg) {
   document.getElementById('syncStatus').textContent = msg;
-  const lbl = document.getElementById('contactCountLabel');
-  lbl.textContent = allContacts.length + ' contacts';
+  document.getElementById('contactCountLabel').textContent = allContacts.length + ' contacts';
 }
-
 function updateBadge() {
   document.getElementById('navBadge').textContent = allContacts.length;
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  DATA — ADD CONTACT
-// ════════════════════════════════════════════════════════════
+// ── POST HELPER ────────────────────────────────────────────
 async function postData(payload) {
   const res = await fetch(SCRIPT_URL, {
     method: 'POST',
@@ -707,6 +570,7 @@ async function postData(payload) {
   return await res.json();
 }
 
+// ── ADD ────────────────────────────────────────────────────
 async function submitAdd() {
   const data = gatherForm('add');
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
@@ -718,19 +582,19 @@ async function submitAdd() {
     clearAddForm();
     await loadContacts();
     navigate('contacts');
-  } catch (err) {
-    toast('Error: ' + err.message, 'error');
-  } finally { hideLoading(); }
+  } catch (err) { toast('Error: ' + err.message, 'error'); }
+  finally { hideLoading(); }
 }
 
 async function saveOCRContact() {
   const data = {
-    'COMPANY':       document.getElementById('ocr_company').value.trim(),
-    'NAME':          document.getElementById('ocr_name').value.trim(),
-    'POSITION':      document.getElementById('ocr_position').value.trim(),
-    'CONTACT#1':     document.getElementById('ocr_contact1').value.trim(),
-    'CONTACT#2':     document.getElementById('ocr_contact2').value.trim(),
-    'EMAIL ADDRESS': document.getElementById('ocr_email').value.trim()
+    'COMPANY':       v('ocr_company'),
+    'NAME':          v('ocr_name'),
+    'POSITION':      v('ocr_position'),
+    'CONTACT#1':     v('ocr_contact1'),
+    'CONTACT#2':     v('ocr_contact2'),
+    'EMAIL ADDRESS': v('ocr_email'),
+    'WEBSITE':       v('ocr_website')
   };
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
   showLoading('Saving contact…');
@@ -742,263 +606,212 @@ async function saveOCRContact() {
     stopCamera();
     await loadContacts();
     navigate('contacts');
-  } catch (err) {
-    toast('Error: ' + err.message, 'error');
-  } finally { hideLoading(); }
+  } catch (err) { toast('Error: ' + err.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  DATA — EDIT CONTACT
-// ════════════════════════════════════════════════════════════
+// ── EDIT ───────────────────────────────────────────────────
 function openEditModal(contact) {
-  document.getElementById('edit_row').value       = contact._row;
-  document.getElementById('edit_company').value   = contact['COMPANY']       || '';
-  document.getElementById('edit_name').value      = contact['NAME']          || '';
-  document.getElementById('edit_position').value  = contact['POSITION']      || '';
-  document.getElementById('edit_contact1').value  = contact['CONTACT#1']     || '';
-  document.getElementById('edit_contact2').value  = contact['CONTACT#2']     || '';
-  document.getElementById('edit_email').value     = contact['EMAIL ADDRESS'] || '';
+  document.getElementById('edit_row').value      = contact._row;
+  document.getElementById('edit_company').value  = contact['COMPANY']       || '';
+  document.getElementById('edit_name').value     = contact['NAME']          || '';
+  document.getElementById('edit_position').value = contact['POSITION']      || '';
+  document.getElementById('edit_contact1').value = contact['CONTACT#1']     || '';
+  document.getElementById('edit_contact2').value = contact['CONTACT#2']     || '';
+  document.getElementById('edit_email').value    = contact['EMAIL ADDRESS'] || '';
+  document.getElementById('edit_website').value  = contact['WEBSITE']       || '';
   openModal('editModal');
 }
-
 async function submitEdit() {
   const row  = parseInt(document.getElementById('edit_row').value, 10);
   const data = gatherForm('edit');
-  showLoading('Updating contact…');
   closeModal('editModal');
+  showLoading('Updating…');
   try {
     const r = await postData({ action: 'update', row, data });
     if (!r.success) throw new Error(r.error);
     toast('Contact updated!', 'success');
     await loadContacts();
-  } catch (err) {
-    toast('Error: ' + err.message, 'error');
-  } finally { hideLoading(); }
+  } catch (err) { toast('Error: ' + err.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  DATA — DELETE CONTACT
-// ════════════════════════════════════════════════════════════
+// ── DELETE ─────────────────────────────────────────────────
 function openDeleteModal(contact) {
-  document.getElementById('delete_row').value       = contact._row;
+  document.getElementById('delete_row').value = contact._row;
   document.getElementById('deleteContactName').textContent =
     (contact['NAME'] || contact['COMPANY'] || 'this contact');
   openModal('deleteModal');
 }
-
 async function submitDelete() {
   const row = parseInt(document.getElementById('delete_row').value, 10);
-  showLoading('Deleting…');
   closeModal('deleteModal');
+  showLoading('Deleting…');
   try {
     const r = await postData({ action: 'delete', row });
     if (!r.success) throw new Error(r.error);
     toast('Contact deleted.', 'info');
     await loadContacts();
-  } catch (err) {
-    toast('Error: ' + err.message, 'error');
-  } finally { hideLoading(); }
+  } catch (err) { toast('Error: ' + err.message, 'error'); }
+  finally { hideLoading(); }
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  SEARCH & FILTER
-// ════════════════════════════════════════════════════════════
+// ── SEARCH ─────────────────────────────────────────────────
 function doSearch() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  if (!q) { filtered = [...allContacts]; }
-  else {
-    filtered = allContacts.filter(c =>
-      (c['COMPANY']       || '').toLowerCase().includes(q) ||
-      (c['NAME']          || '').toLowerCase().includes(q) ||
-      (c['POSITION']      || '').toLowerCase().includes(q) ||
-      (c['CONTACT#1']     || '').toLowerCase().includes(q) ||
-      (c['CONTACT#2']     || '').toLowerCase().includes(q) ||
-      (c['EMAIL ADDRESS'] || '').toLowerCase().includes(q)
-    );
-  }
+  filtered = !q ? [...allContacts] : allContacts.filter(c =>
+    ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE']
+      .some(k => (c[k] || '').toLowerCase().includes(q))
+  );
   renderContactsList();
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  RENDER — DASHBOARD
-// ════════════════════════════════════════════════════════════
+// ── RENDER DASHBOARD ───────────────────────────────────────
 function renderDashboard() {
-  const total      = allContacts.length;
-  const companies  = new Set(allContacts.map(c => c['COMPANY']).filter(Boolean)).size;
-  const withEmail  = allContacts.filter(c => c['EMAIL ADDRESS']).length;
-  const withPhone  = allContacts.filter(c => c['CONTACT#1'] || c['CONTACT#2']).length;
-
-  document.getElementById('statTotal').textContent     = total;
-  document.getElementById('statCompanies').textContent = companies;
-  document.getElementById('statWithEmail').textContent = withEmail;
-  document.getElementById('statWithPhone').textContent = withPhone;
-  document.getElementById('contactCountLabel').textContent = total + ' contacts';
+  document.getElementById('statTotal').textContent     = allContacts.length;
+  document.getElementById('statCompanies').textContent = new Set(allContacts.map(c=>c['COMPANY']).filter(Boolean)).size;
+  document.getElementById('statWithEmail').textContent = allContacts.filter(c=>c['EMAIL ADDRESS']).length;
+  document.getElementById('statWithPhone').textContent = allContacts.filter(c=>c['CONTACT#1']||c['CONTACT#2']).length;
+  document.getElementById('contactCountLabel').textContent = allContacts.length + ' contacts';
 
   const recent = allContacts.slice(-5).reverse();
-  const tbody  = document.getElementById('recentBody');
-  if (!recent.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--gray-400)">No contacts yet.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = recent.map(c => `
-    <tr>
-      <td><strong>${esc(c['COMPANY'])}</strong></td>
-      <td>${esc(c['NAME'])}</td>
-      <td style="color:var(--gray-400);font-size:.8rem;">${esc(c['POSITION'])}</td>
-      <td style="font-family:monospace;font-size:.8rem;">${esc(c['CONTACT#1'])}</td>
-      <td><a href="mailto:${esc(c['EMAIL ADDRESS'])}" style="color:var(--maroon);font-size:.82rem;">${esc(c['EMAIL ADDRESS'])}</a></td>
-    </tr>
-  `).join('');
+  document.getElementById('recentBody').innerHTML = !recent.length
+    ? '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">No contacts yet.</td></tr>'
+    : recent.map(c => `<tr>
+        <td><strong>${esc(c['COMPANY'])}</strong></td>
+        <td>${esc(c['NAME'])}</td>
+        <td style="color:var(--gray-400);font-size:.79rem;">${esc(c['POSITION'])}</td>
+        <td style="font-family:monospace;font-size:.79rem;">${esc(c['CONTACT#1'])}</td>
+        <td><a href="mailto:${esc(c['EMAIL ADDRESS'])}" style="color:var(--maroon);font-size:.79rem;">${esc(c['EMAIL ADDRESS'])}</a></td>
+      </tr>`).join('');
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  RENDER — CONTACTS LIST
-// ════════════════════════════════════════════════════════════
-function renderContactsList() {
-  renderTable();
-  renderCards();
-}
+// ── RENDER CONTACTS ────────────────────────────────────────
+function renderContactsList() { renderTable(); renderCards(); }
 
 function setContactView(v) {
   contactView = v;
-  document.getElementById('tableView').style.display  = v === 'table' ? 'block' : 'none';
-  document.getElementById('cardsView').style.display  = v === 'cards' ? 'block' : 'none';
-  document.getElementById('btnTable').classList.toggle('active', v === 'table');
-  document.getElementById('btnCards').classList.toggle('active', v === 'cards');
+  document.getElementById('tableView').style.display  = v==='table' ? 'block':'none';
+  document.getElementById('cardsView').style.display  = v==='cards' ? 'block':'none';
+  document.getElementById('btnTable').classList.toggle('active', v==='table');
+  document.getElementById('btnCards').classList.toggle('active', v==='cards');
 }
 
 function renderTable() {
-  const tbody = document.getElementById('contactsTableBody');
+  const tb = document.getElementById('contactsTableBody');
   if (!filtered.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No contacts found.</td></tr>';
+    tb.innerHTML = '<tr class="empty-row"><td colspan="8">No contacts found.</td></tr>';
     return;
   }
-  tbody.innerHTML = filtered.map(c => `
-    <tr>
+  tb.innerHTML = filtered.map(c => {
+    const idx = allContacts.indexOf(c);
+    const web = c['WEBSITE'] ? `<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//, ''))}</a>` : '';
+    return `<tr>
       <td class="cell-company">${esc(c['COMPANY'])}</td>
-      <td class="cell-name">${esc(c['NAME'])}</td>
+      <td>${esc(c['NAME'])}</td>
       <td class="cell-pos">${esc(c['POSITION'])}</td>
       <td class="cell-contact">${esc(c['CONTACT#1'])}</td>
       <td class="cell-contact">${esc(c['CONTACT#2'])}</td>
-      <td class="cell-email">${c['EMAIL ADDRESS'] ? `<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>` : ''}</td>
-      <td>
-        <div class="action-btns">
-          <button class="btn-edit" onclick="openEditModal(allContacts[${allContacts.indexOf(c)}])">Edit</button>
-          <button class="btn-del"  onclick="openDeleteModal(allContacts[${allContacts.indexOf(c)}])">Delete</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+      <td class="cell-link">${c['EMAIL ADDRESS']?`<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>`:''}</td>
+      <td class="cell-link">${web}</td>
+      <td><div class="action-btns">
+        <button class="btn-edit" onclick="openEditModal(allContacts[${idx}])">Edit</button>
+        <button class="btn-del"  onclick="openDeleteModal(allContacts[${idx}])">Del</button>
+      </div></td>
+    </tr>`;
+  }).join('');
 }
 
 function renderCards() {
   const grid = document.getElementById('contactsCardsGrid');
   if (!filtered.length) {
-    grid.innerHTML = '<div class="no-data"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><p>No contacts found.</p></div>';
+    grid.innerHTML = '<div class="no-data"><p>No contacts found.</p></div>';
     return;
   }
   grid.innerHTML = filtered.map(c => {
-    const initials = initials2(c['NAME'] || c['COMPANY'] || '?');
     const idx = allContacts.indexOf(c);
-    return `
-      <div class="contact-card">
-        <div class="card-top">
-          <div class="card-avatar">${initials}</div>
-          <div>
-            <div class="card-name">${esc(c['NAME'] || '—')}</div>
-            <div class="card-pos">${esc(c['POSITION'] || '')}</div>
-          </div>
-        </div>
-        <div class="card-company">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-          ${esc(c['COMPANY'] || '—')}
-        </div>
-        <div class="card-info">
-          ${c['CONTACT#1'] ? `<div class="card-info-row"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.89 12 19.79 19.79 0 0 1 1.82 3.42 2 2 0 0 1 3.84 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1-1c.61-.59 1.53-.77 2.31-.45a12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(c['CONTACT#1'])}</div>` : ''}
-          ${c['CONTACT#2'] ? `<div class="card-info-row"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.89 12 19.79 19.79 0 0 1 1.82 3.42 2 2 0 0 1 3.84 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1-1c.61-.59 1.53-.77 2.31-.45a12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(c['CONTACT#2'])}</div>` : ''}
-          ${c['EMAIL ADDRESS'] ? `<div class="card-info-row"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>` : ''}
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-outline btn-sm" style="flex:1" onclick="openEditModal(allContacts[${idx}])">Edit</button>
-          <button class="btn btn-sm" style="flex:1;background:#FEF2F2;color:var(--red);border:none;" onclick="openDeleteModal(allContacts[${idx}])">Delete</button>
-        </div>
+    const av  = initials2(c['NAME'] || c['COMPANY'] || '?');
+    const web = c['WEBSITE']
+      ? `<div class="card-row"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a></div>`
+      : '';
+    return `<div class="contact-card">
+      <div class="card-top">
+        <div class="card-avatar">${av}</div>
+        <div><div class="card-name">${esc(c['NAME']||'—')}</div><div class="card-pos">${esc(c['POSITION']||'')}</div></div>
       </div>
-    `;
+      <div class="card-company">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        ${esc(c['COMPANY']||'—')}
+      </div>
+      <div class="card-info">
+        ${c['CONTACT#1']?`<div class="card-row">${phoneIcon()}${esc(c['CONTACT#1'])}</div>`:''}
+        ${c['CONTACT#2']?`<div class="card-row">${phoneIcon()}${esc(c['CONTACT#2'])}</div>`:''}
+        ${c['EMAIL ADDRESS']?`<div class="card-row">${emailIcon()}<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
+        ${web}
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="openEditModal(allContacts[${idx}])">Edit</button>
+        <button class="btn btn-sm" style="flex:1;background:#FEF2F2;color:var(--red);border:none;" onclick="openDeleteModal(allContacts[${idx}])">Delete</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  CAMERA & OCR
-// ════════════════════════════════════════════════════════════
+// ── CAMERA & OCR ───────────────────────────────────────────
 async function startCamera() {
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } }
     });
-    const video = document.getElementById('cameraVideo');
-    video.srcObject = cameraStream;
-    video.style.display = 'block';
-    document.getElementById('cameraPlaceholder').style.display = 'none';
+    const vid = document.getElementById('cameraVideo');
+    vid.srcObject = cameraStream;
+    vid.style.display = 'block';
+    document.getElementById('camPlaceholder').style.display = 'none';
     document.getElementById('btnStartCam').style.display = 'none';
     document.getElementById('btnCapture').style.display  = 'flex';
     document.getElementById('btnStopCam').style.display  = 'flex';
-    document.getElementById('capturedPreviewWrap').style.display = 'none';
-  } catch (err) {
-    toast('Camera error: ' + err.message, 'error');
-  }
+    document.getElementById('capturedWrap').style.display = 'none';
+  } catch (err) { toast('Camera error: ' + err.message, 'error'); }
 }
 
 function stopCamera() {
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(t => t.stop());
-    cameraStream = null;
-  }
-  const video = document.getElementById('cameraVideo');
-  video.srcObject = null;
-  video.style.display = 'none';
-  document.getElementById('cameraPlaceholder').style.display = 'flex';
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  const vid = document.getElementById('cameraVideo');
+  vid.srcObject = null;
+  vid.style.display = 'none';
+  document.getElementById('camPlaceholder').style.display = 'flex';
   document.getElementById('btnStartCam').style.display = 'flex';
   document.getElementById('btnCapture').style.display  = 'none';
   document.getElementById('btnStopCam').style.display  = 'none';
 }
 
 function captureFrame() {
-  const video  = document.getElementById('cameraVideo');
-  const canvas = document.getElementById('captureCanvas');
-  canvas.width  = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video, 0, 0);
-  capturedImage = canvas.toDataURL('image/png');
-
-  const preview = document.getElementById('capturedPreview');
-  preview.src = capturedImage;
-  document.getElementById('capturedPreviewWrap').style.display = 'block';
-  document.getElementById('ocrProgress').style.display = 'none';
+  const vid = document.getElementById('cameraVideo');
+  const cvs = document.getElementById('captureCanvas');
+  cvs.width = vid.videoWidth; cvs.height = vid.videoHeight;
+  cvs.getContext('2d').drawImage(vid, 0, 0);
+  capturedImg = cvs.toDataURL('image/png');
+  document.getElementById('capturedPreview').src = capturedImg;
+  document.getElementById('capturedWrap').style.display = 'block';
+  document.getElementById('ocrProgressWrap').style.display = 'none';
   stopCamera();
 }
 
 function retakePhoto() {
-  capturedImage = null;
-  document.getElementById('capturedPreviewWrap').style.display = 'none';
+  capturedImg = null;
+  document.getElementById('capturedWrap').style.display = 'none';
   clearOCRForm();
   startCamera();
 }
 
 async function runOCR() {
-  if (!capturedImage) { toast('Capture an image first', 'error'); return; }
-  document.getElementById('ocrProgress').style.display = 'block';
+  if (!capturedImg) { toast('Capture an image first', 'error'); return; }
+  document.getElementById('ocrProgressWrap').style.display = 'block';
   document.getElementById('btnRunOcr').disabled = true;
   document.getElementById('ocrBarFill').style.width = '0%';
-  document.getElementById('ocrStatusText').textContent = 'Initializing Tesseract…';
-
+  document.getElementById('ocrStatusText').textContent = 'Starting Tesseract…';
   try {
-    const result = await Tesseract.recognize(capturedImage, 'eng', {
+    const result = await Tesseract.recognize(capturedImg, 'eng', {
       logger: m => {
         if (m.status === 'recognizing text') {
           const pct = Math.round(m.progress * 100);
@@ -1009,7 +822,6 @@ async function runOCR() {
         }
       }
     });
-
     const parsed = parseOCRText(result.data.text);
     document.getElementById('ocr_company').value  = parsed['COMPANY'];
     document.getElementById('ocr_name').value     = parsed['NAME'];
@@ -1017,174 +829,218 @@ async function runOCR() {
     document.getElementById('ocr_contact1').value = parsed['CONTACT#1'];
     document.getElementById('ocr_contact2').value = parsed['CONTACT#2'];
     document.getElementById('ocr_email').value    = parsed['EMAIL ADDRESS'];
-
+    document.getElementById('ocr_website').value  = parsed['WEBSITE'];
     document.getElementById('ocrBarFill').style.width = '100%';
-    document.getElementById('ocrStatusText').textContent = 'Done! Review the fields →';
-    toast('OCR complete — review before saving', 'success');
-  } catch (err) {
-    toast('OCR failed: ' + err.message, 'error');
-  } finally {
-    document.getElementById('btnRunOcr').disabled = false;
-  }
+    document.getElementById('ocrStatusText').textContent = 'Done — please review the fields →';
+    toast('OCR complete. Review before saving.', 'success');
+  } catch (err) { toast('OCR failed: ' + err.message, 'error'); }
+  finally { document.getElementById('btnRunOcr').disabled = false; }
 }
 
-function parseOCRText(text) {
+// ── OCR PARSER (improved for PH business cards) ────────────
+function parseOCRText(rawText) {
+  const text  = rawText;
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 1);
 
-  // Extract emails
+  // 1. Extract websites (must start with www or http, or end in .com/.ph/.net)
+  const webRx = /(?:https?:\/\/)?(?:www\.)[^\s,;]+|[^\s,;@]+\.(?:com\.ph|com|ph|net|org|co)(?:\/[^\s,;]*)?/gi;
+  const websites = [];
+  let wm;
+  while ((wm = webRx.exec(text)) !== null) {
+    const w = wm[0].trim().replace(/[.,;:)]+$/, '');
+    if (w.length > 5 && !w.includes('@') && !w.match(/^\d/)) websites.push(w);
+  }
+
+  // 2. Extract emails
   const emailRx = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
   const emails  = text.match(emailRx) || [];
 
-  // Extract PH phone numbers (mobile 09XX / +639XX or landlines with area code)
-  const phoneRx = /(\+?63[-.\s]?|0)[9]\d{2}[-.\s]?\d{3}[-.\s]?\d{4}|\(\d{1,4}\)[-.\s]?\d{3,4}[-.\s]?\d{4}/g;
+  // 3. Extract PH phone numbers
+  // Mobile: 09XX or +639XX (11 digits)
+  // Landline: (02) or (032) etc.
+  const phoneRx = /(?:\+63|0063|0)\s?9\d{2}[\s.\-]?\d{3}[\s.\-]?\d{4}|\(\d{1,4}\)[\s.\-]?\d{3,4}[\s.\-]?\d{4}/g;
   const phones  = [];
   let pm;
-  while ((pm = phoneRx.exec(text)) !== null) { phones.push(pm[0].trim()); }
+  while ((pm = phoneRx.exec(text)) !== null) {
+    const p = pm[0].replace(/\s+/g,' ').trim();
+    if (!phones.includes(p)) phones.push(p);
+  }
 
-  // Keyword lists
-  const coKw   = ['inc','corp','co.','company','lines','cargo','shipping','logistics','trading',
-                   'enterprises','group','incorporated','solutions','services','systems',
-                   'international','phils','philippines','freight','forwarding','transport',
-                   'adelante','seaborne','metaformation','toolbox'];
-  const posKw  = ['manager','director','executive','officer','president','ceo','coo','vp',
-                   'vice','account','representative','consultant','specialist','coordinator',
-                   'supervisor','head','chief','associate','broker','agent','sales','marketing',
-                   'development','business','trade','operations'];
-
-  // Remove lines containing extracted items
-  const cleanLines = lines.filter(line => {
-    const lo = line.toLowerCase();
-    const hasEmail = emails.some(e => line.includes(e));
-    const hasPhone = phones.some(p => line.includes(p.replace(/[-.\s]/g, '')));
-    const pureNum  = (line.replace(/[\d\s\-.()+]/g, '').length < 4 && /\d/.test(line));
-    return !hasEmail && !hasPhone && !pureNum;
+  // 4. Remove lines that are purely contact info
+  const usedSet = new Set();
+  const cleanLines = lines.filter((line, i) => {
+    if (emails.some(e => line.toLowerCase().includes(e.toLowerCase()))) return false;
+    if (websites.some(w => line.toLowerCase().includes(w.toLowerCase().replace(/^https?:\/\//,'')))) return false;
+    // Pure number lines
+    if (/^[\d\s\-.()+#*]+$/.test(line) && line.replace(/\D/g,'').length >= 7) return false;
+    // Address indicators
+    const addrKw = ['floor','flr','blvd','avenue','street','bldg','building','brgy','barangay',
+                    'city','manila','cebu','makati','pasay','parañaque','quezon','pasig',
+                    'mandaluyong','taguig','paranaque','rizal','cavite','laguna','batangas'];
+    if (addrKw.some(k => line.toLowerCase().includes(k))) return false;
+    return true;
   });
 
-  const used = new Set();
+  // 5. Keyword lists
+  const coKw = ['inc.','inc','corp.','corp','co.','ltd','llc','company','lines','cargo',
+    'shipping','logistics','trading','enterprises','group','incorporated','solutions',
+    'services','systems','international','phils.','phils','philippines','freight',
+    'forwarding','transport','adelante','seaborne','metaformation','toolbox','wwe',
+    'ap cargo','apcargo','forwarder','agency','authority','port','marine','air',
+    'sea','express','global','alliance','distribution','supply'];
+
+  const posKw = ['manager','director','executive','officer','president','ceo','coo','cfo',
+    'vp','vice president','vice-president','account representative','key account',
+    'account executive','account officer','consultant','specialist','coordinator',
+    'supervisor','head','chief associate','broker','agent','sales','business dev',
+    'business development','marketing','operations','general manager','sales manager',
+    'trade manager','branch manager','proprietor','owner'];
+
   let company = '', position = '', name = '';
+  const used = new Set();
 
-  // Find company
+  // Step A: Find COMPANY
+  // Priority 1: line with company keyword
   cleanLines.forEach((line, i) => {
-    if (!company && coKw.some(k => line.toLowerCase().includes(k))) {
-      company = line; used.add(i);
+    if (company) return;
+    const lo = line.toLowerCase();
+    if (coKw.some(k => lo.includes(k))) {
+      company = line.replace(/\*/g,'').trim();
+      used.add(i);
     }
   });
-
-  // Find position/title
-  cleanLines.forEach((line, i) => {
-    if (!position && !used.has(i) && posKw.some(k => line.toLowerCase().includes(k))) {
-      position = line; used.add(i);
-    }
-  });
-
-  // Find name — short proper-case line 2–5 words, not all-caps garbage
-  cleanLines.forEach((line, i) => {
-    if (!name && !used.has(i)) {
-      const words = line.split(/\s+/).filter(Boolean);
-      const hasCaps = /[A-Z]/.test(line);
-      const notUrl  = !line.includes('www') && !line.includes('.com') && !line.includes('http');
-      if (words.length >= 2 && words.length <= 5 && hasCaps && notUrl && line.length < 55) {
-        name = line; used.add(i);
+  // Priority 2: ALL CAPS line (often company name on cards)
+  if (!company) {
+    cleanLines.forEach((line, i) => {
+      if (company || used.has(i)) return;
+      const stripped = line.replace(/[^A-Za-z\s]/g,'').trim();
+      if (stripped.length > 4 && stripped === stripped.toUpperCase() && /[A-Z]{3,}/.test(stripped)) {
+        company = line.trim();
+        used.add(i);
       }
+    });
+  }
+
+  // Step B: Find POSITION — exact match on title keywords
+  // Try full-line match first (line IS the title)
+  cleanLines.forEach((line, i) => {
+    if (position || used.has(i)) return;
+    const lo = line.toLowerCase();
+    if (posKw.some(k => lo.includes(k))) {
+      position = line.trim();
+      used.add(i);
     }
   });
+
+  // Step C: Find NAME — proper-case 2–4 word line, not a URL/address
+  // Names on PH business cards: often "Firstname M. Lastname" or "FIRSTNAME LASTNAME"
+  cleanLines.forEach((line, i) => {
+    if (name || used.has(i)) return;
+    const words = line.split(/\s+/).filter(Boolean);
+    const notUrl = !line.includes('.') || /[A-Z][a-z]/.test(line);
+    const notNum = !/^\+/.test(line) && line.replace(/\D/g,'').length < 5;
+    const rightLen = words.length >= 2 && words.length <= 5;
+    const hasLetter = /[A-Za-z]/.test(line);
+    if (rightLen && notUrl && notNum && hasLetter && line.length < 55) {
+      name = line.trim();
+      used.add(i);
+    }
+  });
+
+  // Format phones to +63 standard for mobile
+  function formatPH(num) {
+    if (!num) return '';
+    const clean = num.replace(/\s+/g,' ').trim();
+    // Mobile starting with 09 → +63 9XX XXX XXXX
+    const mob = clean.replace(/[\s.\-]/g,'');
+    if (/^09\d{9}$/.test(mob)) {
+      return '+63 ' + mob.substring(1,4) + ' ' + mob.substring(4,7) + ' ' + mob.substring(7);
+    }
+    // Already +63
+    if (clean.startsWith('+63')) return clean;
+    return clean;
+  }
+
+  // Format website
+  let website = websites[0] || '';
+  if (website && !/^https?:\/\//i.test(website)) website = 'https://' + website;
 
   return {
     'COMPANY':       company,
     'NAME':          name,
     'POSITION':      position,
-    'CONTACT#1':     phones[0] || '',
-    'CONTACT#2':     phones[1] || '',
-    'EMAIL ADDRESS': emails[0] || ''
+    'CONTACT#1':     formatPH(phones[0]),
+    'CONTACT#2':     formatPH(phones[1]),
+    'EMAIL ADDRESS': emails[0] || '',
+    'WEBSITE':       website
   };
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  FORM HELPERS
-// ════════════════════════════════════════════════════════════
+// ── FORM HELPERS ────────────────────────────────────────────
 function gatherForm(prefix) {
   return {
-    'COMPANY':       document.getElementById(prefix + '_company').value.trim(),
-    'NAME':          document.getElementById(prefix + '_name').value.trim(),
-    'POSITION':      document.getElementById(prefix + '_position').value.trim(),
-    'CONTACT#1':     document.getElementById(prefix + '_contact1').value.trim(),
-    'CONTACT#2':     document.getElementById(prefix + '_contact2').value.trim(),
-    'EMAIL ADDRESS': document.getElementById(prefix + '_email').value.trim()
+    'COMPANY':       v(prefix+'_company'),
+    'NAME':          v(prefix+'_name'),
+    'POSITION':      v(prefix+'_position'),
+    'CONTACT#1':     v(prefix+'_contact1'),
+    'CONTACT#2':     v(prefix+'_contact2'),
+    'EMAIL ADDRESS': v(prefix+'_email'),
+    'WEBSITE':       v(prefix+'_website')
   };
 }
-
 function clearAddForm() {
-  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email']
+  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email','add_website']
     .forEach(id => document.getElementById(id).value = '');
 }
-
 function clearOCRForm() {
-  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email']
+  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email','ocr_website']
     .forEach(id => document.getElementById(id).value = '');
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  MODALS
-// ════════════════════════════════════════════════════════════
+// ── MODALS ─────────────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// Close on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay) overlay.classList.remove('open');
-  });
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); });
 });
 
-
-// ════════════════════════════════════════════════════════════
-//  LOADING
-// ════════════════════════════════════════════════════════════
+// ── LOADING ────────────────────────────────────────────────
 function showLoading(msg) {
-  document.getElementById('loadingText').textContent = msg || 'Loading…';
+  document.getElementById('loadingText').textContent = msg||'Loading…';
   document.getElementById('loadingOverlay').style.display = 'flex';
 }
-function hideLoading() {
-  document.getElementById('loadingOverlay').style.display = 'none';
-}
+function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
-
-// ════════════════════════════════════════════════════════════
-//  TOAST
-// ════════════════════════════════════════════════════════════
-function toast(msg, type = 'info') {
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg, type='info') {
   const wrap = document.getElementById('toastWrap');
   const el   = document.createElement('div');
   el.className = 'toast ' + type;
   el.innerHTML = `
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-      ${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' :
-        type === 'error'   ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' :
-                             '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="currentColor"/>'}
-    </svg>
-    ${msg}
-  `;
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      ${type==='success'?'<polyline points="20 6 9 17 4 12"/>':
+        type==='error'?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>':
+        '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="currentColor"/>'}
+    </svg>${esc(msg)}`;
   wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; setTimeout(() => el.remove(), 400); }, 3200);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .4s'; setTimeout(()=>el.remove(),400); }, 3200);
 }
 
-
-// ════════════════════════════════════════════════════════════
-//  UTILITIES
-// ════════════════════════════════════════════════════════════
-function esc(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── UTILITIES ──────────────────────────────────────────────
+function v(id) { return (document.getElementById(id).value||'').trim(); }
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function initials2(name) {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const p = name.trim().split(/\s+/);
+  return p.length===1 ? p[0].substring(0,2).toUpperCase() : (p[0][0]+(p[p.length-1][0]||'')).toUpperCase();
+}
+function phoneIcon() {
+  return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.89 12 19.79 19.79 0 0 1 1.82 3.42 2 2 0 0 1 3.84 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1-1c.61-.59 1.53-.77 2.31-.45a12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+}
+function emailIcon() {
+  return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
 }
 </script>
 </body>
