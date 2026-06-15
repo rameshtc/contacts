@@ -9,8 +9,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --maroon:#800020;--maroon-dark:#5C0016;--maroon-bg:#FDF0F3;
-  --white:#ffffff;--gray-50:#F9FAFB;--gray-100:#F3F4F6;
-  --gray-200:#E5E7EB;--gray-400:#9CA3AF;--gray-600:#4B5563;--gray-800:#1F2937;
+  --white:#ffffff;--gray-100:#F3F4F6;--gray-200:#E5E7EB;
+  --gray-400:#9CA3AF;--gray-600:#4B5563;--gray-800:#1F2937;
   --green:#10B981;--red:#EF4444;
   --shadow-sm:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 16px rgba(0,0,0,.12);
   --shadow-lg:0 8px 32px rgba(0,0,0,.18);--radius:10px;
@@ -18,167 +18,156 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;}
 
-/* Header */
 .header{position:fixed;top:0;left:0;right:0;height:var(--header);background:var(--maroon);display:flex;align-items:center;padding:0 20px;z-index:200;box-shadow:var(--shadow-md);}
-.header-logo{display:flex;align-items:center;gap:10px;color:var(--white);}
-.header-title{font-size:1rem;font-weight:700;letter-spacing:.3px;}
+.header-logo{display:flex;align-items:center;gap:10px;color:#fff;}
+.header-title{font-size:1rem;font-weight:700;}
 .header-sub{font-weight:300;opacity:.85;font-size:.75rem;display:block;margin-top:1px;}
 .header-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.btn-icon{background:rgba(255,255,255,.15);border:none;color:var(--white);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+.btn-icon{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
 .btn-icon:hover{background:rgba(255,255,255,.25);}
 .sync-status{font-size:.72rem;color:rgba(255,255,255,.75);margin-right:4px;}
 
-/* Sidebar */
-.sidebar{position:fixed;top:var(--header);left:0;width:var(--sidebar);height:calc(100vh - var(--header));background:var(--white);border-right:1px solid var(--gray-200);overflow-y:auto;z-index:100;transition:transform var(--transition);}
+.sidebar{position:fixed;top:var(--header);left:0;width:var(--sidebar);height:calc(100vh - var(--header));background:#fff;border-right:1px solid var(--gray-200);overflow-y:auto;z-index:100;transition:transform var(--transition);}
 .sidebar-section{padding:16px 12px 8px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border-radius:8px;margin:2px 8px;color:var(--gray-600);font-size:.88rem;font-weight:500;transition:var(--transition);border:none;background:none;width:calc(100% - 16px);text-align:left;}
 .nav-item:hover{background:var(--maroon-bg);color:var(--maroon);}
 .nav-item.active{background:var(--maroon-bg);color:var(--maroon);font-weight:600;}
 .nav-badge{margin-left:auto;background:var(--maroon);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:20px;}
 
-/* Main */
 .main{margin-left:var(--sidebar);margin-top:var(--header);min-height:calc(100vh - var(--header));padding:28px 32px;}
-.view{display:none;} .view.active{display:block;}
-.page-title{font-size:1.4rem;font-weight:700;color:var(--gray-800);margin-bottom:4px;}
+.view{display:none;}.view.active{display:block;}
+.page-title{font-size:1.4rem;font-weight:700;margin-bottom:4px;}
 .page-sub{font-size:.85rem;color:var(--gray-400);margin-bottom:24px;}
 
-/* Stat Cards */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:16px;margin-bottom:28px;}
-.stat-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border-left:4px solid var(--maroon);}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border-left:4px solid var(--maroon);}
 .stat-val{font-size:2rem;font-weight:800;color:var(--maroon);}
 .stat-lbl{font-size:.78rem;color:var(--gray-400);margin-top:2px;font-weight:500;}
 
-/* Section Card */
-.section-card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;}
+.section-card{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.section-title{font-size:1rem;font-weight:700;color:var(--gray-800);}
+.section-title{font-size:1rem;font-weight:700;}
 
-/* Toolbar */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .search-wrap{position:relative;flex:1;min-width:200px;}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none;}
-.search-input{width:100%;padding:9px 12px 9px 38px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.88rem;outline:none;transition:var(--transition);background:var(--white);}
+.search-input{width:100%;padding:9px 12px 9px 38px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.88rem;outline:none;transition:var(--transition);background:#fff;}
 .search-input:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,.1);}
 
-/* Buttons */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:var(--transition);}
-.btn-primary{background:var(--maroon);color:#fff;} .btn-primary:hover{background:var(--maroon-dark);}
-.btn-secondary{background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);} .btn-secondary:hover{background:var(--gray-200);}
-.btn-danger{background:var(--red);color:#fff;} .btn-danger:hover{background:#DC2626;}
+.btn-primary{background:var(--maroon);color:#fff;}.btn-primary:hover{background:var(--maroon-dark);}
+.btn-secondary{background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);}.btn-secondary:hover{background:var(--gray-200);}
+.btn-danger{background:var(--red);color:#fff;}.btn-danger:hover{background:#DC2626;}
 .btn-sm{padding:6px 12px;font-size:.78rem;}
-.btn-outline{background:transparent;color:var(--maroon);border:1.5px solid var(--maroon);} .btn-outline:hover{background:var(--maroon-bg);}
+.btn-outline{background:transparent;color:var(--maroon);border:1.5px solid var(--maroon);}.btn-outline:hover{background:var(--maroon-bg);}
 .toggle-wrap{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden;}
-.toggle-wrap button{padding:8px 14px;border:none;background:var(--white);cursor:pointer;font-size:.82rem;font-weight:600;color:var(--gray-400);transition:var(--transition);}
+.toggle-wrap button{padding:8px 14px;border:none;background:#fff;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--gray-400);transition:var(--transition);}
 .toggle-wrap button.active{background:var(--maroon);color:#fff;}
 
-/* Table */
 .table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:.84rem;}
-th{text-align:left;padding:10px 12px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);white-space:nowrap;}
-td{padding:10px 12px;border-bottom:1px solid var(--gray-100);vertical-align:middle;}
+table{width:100%;border-collapse:collapse;font-size:.83rem;}
+th{text-align:left;padding:9px 11px;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);white-space:nowrap;}
+td{padding:9px 11px;border-bottom:1px solid var(--gray-100);vertical-align:top;}
 tr:hover td{background:var(--maroon-bg);}
-.cell-company{font-weight:700;color:var(--gray-800);}
-.cell-pos{color:var(--gray-500);font-size:.8rem;}
-.cell-contact{font-family:monospace;font-size:.8rem;color:var(--gray-600);}
-.cell-link a{color:var(--maroon);text-decoration:none;font-size:.8rem;} .cell-link a:hover{text-decoration:underline;}
-.action-btns{display:flex;gap:5px;}
-.btn-edit{background:var(--maroon-bg);color:var(--maroon);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;transition:var(--transition);}
+.c-co{font-weight:700;}.c-pos{color:var(--gray-400);font-size:.79rem;}
+.c-ph{font-family:monospace;font-size:.79rem;color:var(--gray-600);}
+.c-lnk a{color:var(--maroon);text-decoration:none;font-size:.79rem;word-break:break-all;}
+.c-lnk a:hover{text-decoration:underline;}
+.c-addr{font-size:.79rem;color:var(--gray-500);max-width:180px;}
+.action-btns{display:flex;gap:5px;white-space:nowrap;}
+.btn-edit{background:var(--maroon-bg);color:var(--maroon);border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:.74rem;font-weight:600;transition:var(--transition);}
 .btn-edit:hover{background:var(--maroon);color:#fff;}
-.btn-del{background:#FEF2F2;color:var(--red);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;transition:var(--transition);}
+.btn-del{background:#FEF2F2;color:var(--red);border:none;padding:5px 9px;border-radius:6px;cursor:pointer;font-size:.74rem;font-weight:600;transition:var(--transition);}
 .btn-del:hover{background:var(--red);color:#fff;}
-.empty-row td{text-align:center;padding:40px;color:var(--gray-400);font-size:.9rem;}
+.empty-row td{text-align:center;padding:40px;color:var(--gray-400);}
 
-/* Cards */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
-.contact-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1.5px solid var(--gray-200);transition:var(--transition);}
+.contact-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1.5px solid var(--gray-200);transition:var(--transition);}
 .contact-card:hover{box-shadow:var(--shadow-md);border-color:var(--maroon);transform:translateY(-2px);}
 .card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
-.card-avatar{width:44px;height:44px;border-radius:10px;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;}
-.card-name{font-weight:700;font-size:.95rem;color:var(--gray-800);}
+.card-av{width:44px;height:44px;border-radius:10px;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;}
+.card-name{font-weight:700;font-size:.95rem;}
 .card-pos{font-size:.78rem;color:var(--gray-400);margin-top:2px;}
-.card-company{font-size:.82rem;color:var(--maroon);font-weight:600;margin-bottom:10px;}
+.card-co{font-size:.82rem;color:var(--maroon);font-weight:600;margin-bottom:10px;}
 .card-info{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
-.card-row{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--gray-600);}
-.card-row svg{flex-shrink:0;color:var(--gray-400);}
-.card-row a{color:var(--maroon);text-decoration:none;} .card-row a:hover{text-decoration:underline;}
+.card-row{display:flex;align-items:flex-start;gap:8px;font-size:.79rem;color:var(--gray-600);}
+.card-row svg{flex-shrink:0;margin-top:1px;color:var(--gray-400);}
+.card-row a{color:var(--maroon);text-decoration:none;}.card-row a:hover{text-decoration:underline;}
 .card-actions{display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--gray-100);}
 
-/* Forms */
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
 .form-group{display:flex;flex-direction:column;gap:5px;}
 .form-label{font-size:.78rem;font-weight:700;color:var(--gray-600);letter-spacing:.3px;}
-.form-hint{font-size:.72rem;color:var(--gray-400);margin-top:2px;}
-.form-control{padding:10px 13px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.87rem;outline:none;transition:var(--transition);font-family:inherit;background:var(--white);}
+.form-hint{font-size:.71rem;color:var(--gray-400);}
+.form-control{padding:10px 13px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:.87rem;outline:none;transition:var(--transition);font-family:inherit;background:#fff;}
 .form-control:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,.1);}
 .form-control::placeholder{color:var(--gray-400);}
+textarea.form-control{resize:vertical;min-height:72px;}
 .form-actions{display:flex;gap:10px;margin-top:10px;}
 .divider{height:1px;background:var(--gray-200);margin:16px 0;}
+.full-col{grid-column:1/-1;}
 
-/* Capture */
 .capture-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
-.camera-box{background:#0a0a0a;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;position:relative;display:flex;align-items:center;justify-content:center;}
+.camera-box{background:#0a0a0a;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;}
 .camera-box video{width:100%;height:100%;object-fit:cover;}
-.cam-placeholder{text-align:center;color:rgba(255,255,255,.4);}
-.cam-placeholder p{font-size:.82rem;margin-top:8px;}
+.cam-ph{text-align:center;color:rgba(255,255,255,.4);}
+.cam-ph p{font-size:.82rem;margin-top:8px;}
 .camera-controls{display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;}
 .ocr-bar-wrap{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;margin:6px 0;}
 .ocr-bar-fill{height:100%;background:var(--maroon);border-radius:3px;transition:width .3s ease;width:0%;}
-.ocr-status{font-size:.78rem;color:var(--gray-400);}
+.ocr-status-txt{font-size:.78rem;color:var(--gray-400);}
 .captured-img{width:100%;border-radius:8px;margin-bottom:10px;max-height:200px;object-fit:contain;border:1px solid var(--gray-200);}
 
-/* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mIn .2s ease;}
+.modal{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mIn .2s ease;}
 @keyframes mIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
 .modal-title{font-size:1.05rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-200);}
 .confirm-modal{max-width:400px;text-align:center;}
 .confirm-icon{width:56px;height:56px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
 
-/* Toast */
 .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:900;display:flex;flex-direction:column;gap:8px;}
 .toast{padding:11px 16px;border-radius:10px;color:#fff;font-size:.84rem;font-weight:600;box-shadow:var(--shadow-md);display:flex;align-items:center;gap:8px;animation:tIn .25s ease;max-width:300px;}
 @keyframes tIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
-.toast.success{background:var(--green);} .toast.error{background:var(--red);} .toast.info{background:var(--maroon);}
+.toast.success{background:var(--green);}.toast.error{background:var(--red);}.toast.info{background:var(--maroon);}
 
-/* Recent table */
-.rtable{width:100%;border-collapse:collapse;font-size:.83rem;}
+.rtable{width:100%;border-collapse:collapse;font-size:.82rem;}
 .rtable th{text-align:left;padding:8px 10px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:2px solid var(--gray-200);}
 .rtable td{padding:9px 10px;border-bottom:1px solid var(--gray-100);}
 .rtable tr:last-child td{border-bottom:none;}
 
-/* Loading */
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:999;}
-.loading-box{background:var(--white);border-radius:12px;padding:28px 36px;text-align:center;box-shadow:var(--shadow-lg);}
+.loading-box{background:#fff;border-radius:12px;padding:28px 36px;text-align:center;box-shadow:var(--shadow-lg);}
 .spinner-big{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--maroon);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Responsive */
 @media(max-width:768px){
-  .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0;padding:16px;} .stats-grid{grid-template-columns:repeat(2,1fr);}
-  .capture-layout{grid-template-columns:1fr;} .menu-btn{display:flex!important;}
+  .sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:16px;}.stats-grid{grid-template-columns:repeat(2,1fr);}
+  .capture-layout{grid-template-columns:1fr;}.menu-btn{display:flex!important;}
 }
 .menu-btn{display:none;}
 .overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
 .overlay-bg.open{display:block;}
 .no-data{text-align:center;padding:48px 20px;color:var(--gray-400);}
+
+/* OCR debug box */
+.ocr-raw{background:var(--gray-100);border-radius:8px;padding:10px;font-family:monospace;font-size:.72rem;color:var(--gray-600);max-height:120px;overflow-y:auto;margin-top:8px;white-space:pre-wrap;display:none;}
+/* Auto uppercase inputs */
+.auto-upper{text-transform:uppercase;}
+.auto-upper::placeholder{text-transform:none;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <button class="btn-icon menu-btn" onclick="toggleSidebar()" style="margin-right:8px;">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="header-logo">
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,.2)"/><text x="16" y="22" text-anchor="middle" fill="#fff" font-weight="800" font-size="13" font-family="sans-serif">RTC</text></svg>
-    <div>
-      <div class="header-title">RTC Client Contact System</div>
-      <span class="header-sub" id="contactCountLabel">Loading…</span>
-    </div>
+    <div><div class="header-title">RTC Client Contact System</div><span class="header-sub" id="contactCountLabel">Loading…</span></div>
   </div>
   <div class="header-actions">
     <span class="sync-status" id="syncStatus"></span>
@@ -193,7 +182,6 @@ tr:hover td{background:var(--maroon-bg);}
 
 <div class="overlay-bg" id="overlayBg" onclick="toggleSidebar()"></div>
 
-<!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-section">Menu</div>
   <button class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
@@ -216,7 +204,6 @@ tr:hover td{background:var(--maroon-bg);}
   </button>
 </nav>
 
-<!-- MAIN -->
 <main class="main">
 
   <!-- DASHBOARD -->
@@ -250,7 +237,7 @@ tr:hover td{background:var(--maroon-bg);}
     <div class="toolbar">
       <div class="search-wrap">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" id="searchInput" type="text" placeholder="Search name, company, email, phone…" oninput="doSearch()"/>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search name, company, position, email…" oninput="doSearch()"/>
       </div>
       <div class="toggle-wrap">
         <button id="btnTable" class="active" onclick="setContactView('table')">
@@ -261,25 +248,21 @@ tr:hover td{background:var(--maroon-bg);}
         </button>
       </div>
       <button class="btn btn-primary" onclick="navigate('add')">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Contact
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
       </button>
     </div>
-    <!-- Table -->
     <div class="section-card" id="tableView">
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Company</th><th>Name</th><th>Position</th>
-              <th>Tel / Mobile</th><th>Contact #2</th>
-              <th>Email</th><th>Website</th><th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th>Company</th><th>Name</th><th>Position</th>
+            <th>Tel / Mobile</th><th>Contact #2</th>
+            <th>Email</th><th>Website</th><th>Address</th><th>Actions</th>
+          </tr></thead>
           <tbody id="contactsTableBody"></tbody>
         </table>
       </div>
     </div>
-    <!-- Cards -->
     <div id="cardsView" style="display:none;">
       <div class="cards-grid" id="contactsCardsGrid"></div>
     </div>
@@ -288,17 +271,16 @@ tr:hover td{background:var(--maroon-bg);}
   <!-- CAPTURE -->
   <div class="view" id="view-capture">
     <div class="page-title">Capture Business Card</div>
-    <div class="page-sub">Point camera at a calling card → Capture → OCR auto-fills → Save</div>
+    <div class="page-sub">Point camera at calling card → Capture → OCR → Review → Save</div>
     <div class="capture-layout">
-      <!-- Camera -->
       <div>
         <div class="camera-box" id="cameraBox">
-          <div class="cam-placeholder" id="camPlaceholder">
+          <div class="cam-ph" id="camPh">
             <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             <p>Camera not started</p>
           </div>
-          <video id="cameraVideo" autoplay playsinline style="display:none;width:100%;height:100%;object-fit:cover;"></video>
-          <canvas id="captureCanvas" style="display:none;"></canvas>
+          <video id="camVid" autoplay playsinline style="display:none;width:100%;height:100%;object-fit:cover;"></video>
+          <canvas id="capCanvas" style="display:none;"></canvas>
         </div>
         <div class="camera-controls">
           <button class="btn btn-secondary" id="btnStartCam" onclick="startCamera()">
@@ -309,19 +291,35 @@ tr:hover td{background:var(--maroon-bg);}
           </button>
           <button class="btn btn-secondary" id="btnStopCam" onclick="stopCamera()" style="display:none;">Stop</button>
         </div>
-        <!-- Preview & OCR -->
         <div id="capturedWrap" style="margin-top:14px;display:none;">
           <img id="capturedPreview" class="captured-img" alt="Captured card"/>
-          <div id="ocrProgressWrap" style="display:none;">
-            <div style="font-size:.8rem;font-weight:600;color:var(--gray-600);margin-bottom:4px;">Running OCR…</div>
+          <!-- OCR progress — shown while auto-running -->
+          <div id="ocrProgWrap">
+            <div style="font-size:.8rem;font-weight:600;color:var(--gray-600);margin-bottom:4px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Reading card automatically…
+            </div>
             <div class="ocr-bar-wrap"><div class="ocr-bar-fill" id="ocrBarFill"></div></div>
-            <div class="ocr-status" id="ocrStatusText">Initializing…</div>
+            <div class="ocr-status-txt" id="ocrStatusTxt">Initializing…</div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button class="btn btn-primary btn-sm" id="btnRunOcr" onclick="runOCR()">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Run OCR
-            </button>
-            <button class="btn btn-secondary btn-sm" onclick="retakePhoto()">Retake</button>
+          <!-- After OCR done: Re-scan option -->
+          <div id="ocrDoneWrap" style="display:none;margin-top:10px;">
+            <div style="font-size:.8rem;color:var(--green);font-weight:600;margin-bottom:8px;">
+              ✓ Card read. Review the fields → then Save.
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="retakePhoto()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Retake Photo
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="runOCR()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Re-scan
+              </button>
+            </div>
+          </div>
+          <!-- Raw OCR text for debugging -->
+          <div style="margin-top:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="toggleRaw()" id="btnRaw" style="display:none;font-size:.7rem;">Show Raw OCR</button>
+            <div class="ocr-raw" id="ocrRaw"></div>
           </div>
         </div>
       </div>
@@ -329,39 +327,22 @@ tr:hover td{background:var(--maroon-bg);}
       <div>
         <div class="section-card" style="margin-bottom:0;">
           <div class="section-title" style="margin-bottom:4px;">Parsed Contact Info</div>
-          <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:14px;">Review and correct before saving. OCR is not perfect — always double-check names and numbers.</p>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div class="form-group">
-              <label class="form-label">Company Name</label>
-              <input class="form-control" id="ocr_company" placeholder="Company / Organization"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Full Name</label>
-              <input class="form-control" id="ocr_name" placeholder="First and Last Name"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Position / Title</label>
-              <input class="form-control" id="ocr_position" placeholder="Job title or designation"/>
-            </div>
+          <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:14px;">OCR auto-fills below — always review and correct before saving.</p>
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-control auto-upper" id="ocr_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()"/></div>
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-control auto-upper" id="ocr_name" placeholder="First and Last Name" oninput="this.value=this.value.toUpperCase()"/></div>
+            <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control auto-upper" id="ocr_position" placeholder="Job title or designation" oninput="this.value=this.value.toUpperCase()"/></div>
             <div class="form-group">
               <label class="form-label">Telephone / Mobile</label>
-              <input class="form-control" id="ocr_contact1" placeholder="+63 9XX XXX XXXX or (02) XXXX-XXXX"/>
-              <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
+              <input class="form-control" id="ocr_contact1" placeholder="+63 9XX XXX XXXX"/>
+              <span class="form-hint">Mobile format: +63 9XX XXX XXXX</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">Contact #2</label>
-              <input class="form-control" id="ocr_contact2" placeholder="+63 9XX XXX XXXX or landline"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input class="form-control" id="ocr_email" type="email" placeholder="email@domain.com"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Website</label>
-              <input class="form-control" id="ocr_website" placeholder="https://www.company.com"/>
-            </div>
+            <div class="form-group"><label class="form-label">Contact #2</label><input class="form-control" id="ocr_contact2" placeholder="+63 2 XXXX XXXX or landline"/></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="ocr_email" type="email" placeholder="email@domain.com"/></div>
+            <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="ocr_website" placeholder="https://www.company.com"/></div>
+            <div class="form-group"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="ocr_address" placeholder="Street, Barangay, City, Province" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
           </div>
-          <div class="form-actions" style="margin-top:16px;">
+          <div class="form-actions" style="margin-top:14px;">
             <button class="btn btn-primary" onclick="saveOCRContact()">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save to Google Sheets
             </button>
@@ -376,37 +357,20 @@ tr:hover td{background:var(--maroon-bg);}
   <div class="view" id="view-add">
     <div class="page-title">Add Contact</div>
     <div class="page-sub">Manually enter a new contact record</div>
-    <div class="section-card" style="max-width:720px;">
+    <div class="section-card" style="max-width:740px;">
       <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Company Name *</label>
-          <input class="form-control" id="add_company" placeholder="Company / Organization"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Full Name *</label>
-          <input class="form-control" id="add_name" placeholder="First and Last Name"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Position / Title</label>
-          <input class="form-control" id="add_position" placeholder="Job title or designation"/>
-        </div>
+        <div class="form-group"><label class="form-label">Company Name *</label><input class="form-control auto-upper" id="add_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control auto-upper" id="add_name" placeholder="First and Last Name" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control auto-upper" id="add_position" placeholder="Job title or designation" oninput="this.value=this.value.toUpperCase()"/></div>
         <div class="form-group">
           <label class="form-label">Telephone / Mobile</label>
           <input class="form-control" id="add_contact1" placeholder="+63 9XX XXX XXXX"/>
-          <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
+          <span class="form-hint">Mobile format: +63 9XX XXX XXXX</span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Contact #2</label>
-          <input class="form-control" id="add_contact2" placeholder="+63 9XX XXX XXXX or landline"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input class="form-control" id="add_email" type="email" placeholder="email@domain.com"/>
-        </div>
-        <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Website</label>
-          <input class="form-control" id="add_website" placeholder="https://www.company.com"/>
-        </div>
+        <div class="form-group"><label class="form-label">Contact #2</label><input class="form-control" id="add_contact2" placeholder="+63 2 XXXX XXXX or landline"/></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="add_email" type="email" placeholder="email@domain.com"/></div>
+        <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="add_website" placeholder="https://www.company.com"/></div>
+        <div class="form-group full-col"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="add_address" placeholder="Street, Barangay, City, Province" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
       </div>
       <div class="divider"></div>
       <div class="form-actions">
@@ -421,25 +385,19 @@ tr:hover td{background:var(--maroon-bg);}
   <!-- SETTINGS -->
   <div class="view" id="view-settings">
     <div class="page-title">Settings</div>
-    <div class="page-sub">System configuration</div>
+    <div class="page-sub">System configuration and column reference</div>
     <div class="section-card" style="max-width:600px;">
-      <div class="section-title" style="margin-bottom:12px;">Connected Apps Script</div>
-      <div style="background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:12px;font-family:monospace;font-size:.78rem;color:var(--maroon);word-break:break-all;" id="currentScriptUrl"></div>
+      <div class="section-title" style="margin-bottom:10px;">Connected Apps Script URL</div>
+      <div style="background:var(--gray-100);border:1.5px solid var(--gray-200);border-radius:8px;padding:12px;font-family:monospace;font-size:.76rem;color:var(--maroon);word-break:break-all;" id="currentScriptUrl"></div>
       <div class="divider"></div>
-      <div class="section-title" style="margin-bottom:12px;">Google Sheet Columns (A–G)</div>
+      <div class="section-title" style="margin-bottom:12px;">Google Sheet Columns (A–H)</div>
       <table style="font-size:.83rem;border-collapse:collapse;width:100%;">
         <thead><tr style="background:var(--gray-100);">
-          <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;color:var(--gray-400);">Column</th>
-          <th style="padding:8px 10px;text-align:left;font-size:.72rem;text-transform:uppercase;color:var(--gray-400);">Header (exact)</th>
+          <th style="padding:8px 10px;text-align:left;font-size:.69rem;text-transform:uppercase;color:var(--gray-400);">Col</th>
+          <th style="padding:8px 10px;text-align:left;font-size:.69rem;text-transform:uppercase;color:var(--gray-400);">Header (exact spelling)</th>
         </tr></thead>
         <tbody>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">A</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">COMPANY</td></tr>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">B</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">NAME</td></tr>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">C</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">POSITION</td></tr>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">D</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">CONTACT#1</td></tr>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">E</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">CONTACT#2</td></tr>
-          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:600;">F</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;">EMAIL ADDRESS</td></tr>
-          <tr><td style="padding:7px 10px;font-weight:600;">G</td><td style="padding:7px 10px;font-family:monospace;">WEBSITE</td></tr>
+          ${[['A','COMPANY'],['B','NAME'],['C','POSITION'],['D','CONTACT#1'],['E','CONTACT#2'],['F','EMAIL ADDRESS'],['G','WEBSITE'],['H','ADDRESS']].map(r=>`<tr><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-weight:700;">${r[0]}</td><td style="padding:7px 10px;border-bottom:1px solid var(--gray-100);font-family:monospace;font-size:.82rem;">${r[1]}</td></tr>`).join('')}
         </tbody>
       </table>
     </div>
@@ -455,17 +413,18 @@ tr:hover td{background:var(--maroon-bg);}
     </div>
     <input type="hidden" id="edit_row"/>
     <div class="form-grid">
-      <div class="form-group"><label class="form-label">Company Name</label><input class="form-control" id="edit_company"/></div>
-      <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="edit_name"/></div>
-      <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control" id="edit_position"/></div>
+      <div class="form-group"><label class="form-label">Company Name</label><input class="form-control auto-upper" id="edit_company" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-control auto-upper" id="edit_name" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="form-group"><label class="form-label">Position / Title</label><input class="form-control auto-upper" id="edit_position" oninput="this.value=this.value.toUpperCase()"/></div>
       <div class="form-group">
         <label class="form-label">Telephone / Mobile</label>
         <input class="form-control" id="edit_contact1" placeholder="+63 9XX XXX XXXX"/>
-        <span class="form-hint">Format: +63 9XX XXX XXXX for mobile</span>
+        <span class="form-hint">Mobile format: +63 9XX XXX XXXX</span>
       </div>
       <div class="form-group"><label class="form-label">Contact #2</label><input class="form-control" id="edit_contact2"/></div>
       <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="edit_email" type="email"/></div>
-      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Website</label><input class="form-control" id="edit_website" placeholder="https://www.company.com"/></div>
+      <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="edit_website" placeholder="https://www.company.com"/></div>
+      <div class="form-group full-col"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="edit_address" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
@@ -496,29 +455,26 @@ tr:hover td{background:var(--maroon-bg);}
   <div class="loading-box"><div class="spinner-big"></div><p id="loadingText">Loading…</p></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════════════════════════════ -->
 <script>
-// ╔══════════════════════════════════════════════════════════╗
-// ║  ⚙  CONFIGURATION                                        ║
-// ╚══════════════════════════════════════════════════════════╝
+// ╔══════════════════════════════════════════════════════╗
+// ║  ⚙  SET YOUR APPS SCRIPT URL HERE                   ║
+// ╚══════════════════════════════════════════════════════╝
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza-2VH4965YMel2PPIBqRqx6k20QNP7urtuIOSxlkRlVs8tnWzW-U8H8kRSK2DHMGZ/exec';
 
-// ── STATE ──────────────────────────────────────────────────
+// ── STATE ──────────────────────────────────────────────
 let allContacts  = [];
 let filtered     = [];
 let contactView  = 'table';
 let cameraStream = null;
 let capturedImg  = null;
 
-// ── INIT ───────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('currentScriptUrl').textContent = SCRIPT_URL;
   loadContacts();
 });
 
-// ── NAVIGATION ─────────────────────────────────────────────
+// ── NAVIGATION ─────────────────────────────────────────
 function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -533,7 +489,7 @@ function toggleSidebar() {
   document.getElementById('overlayBg').classList.toggle('open');
 }
 
-// ── LOAD CONTACTS ──────────────────────────────────────────
+// ── LOAD CONTACTS ──────────────────────────────────────
 async function loadContacts(showToast = false) {
   setSync('Syncing…');
   try {
@@ -556,11 +512,9 @@ function setSync(msg) {
   document.getElementById('syncStatus').textContent = msg;
   document.getElementById('contactCountLabel').textContent = allContacts.length + ' contacts';
 }
-function updateBadge() {
-  document.getElementById('navBadge').textContent = allContacts.length;
-}
+function updateBadge() { document.getElementById('navBadge').textContent = allContacts.length; }
 
-// ── POST HELPER ────────────────────────────────────────────
+// ── POST ───────────────────────────────────────────────
 async function postData(payload) {
   const res = await fetch(SCRIPT_URL, {
     method: 'POST',
@@ -570,7 +524,7 @@ async function postData(payload) {
   return await res.json();
 }
 
-// ── ADD ────────────────────────────────────────────────────
+// ── ADD ────────────────────────────────────────────────
 async function submitAdd() {
   const data = gatherForm('add');
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
@@ -594,7 +548,8 @@ async function saveOCRContact() {
     'CONTACT#1':     v('ocr_contact1'),
     'CONTACT#2':     v('ocr_contact2'),
     'EMAIL ADDRESS': v('ocr_email'),
-    'WEBSITE':       v('ocr_website')
+    'WEBSITE':       v('ocr_website'),
+    'ADDRESS':       v('ocr_address')
   };
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
   showLoading('Saving contact…');
@@ -610,16 +565,18 @@ async function saveOCRContact() {
   finally { hideLoading(); }
 }
 
-// ── EDIT ───────────────────────────────────────────────────
+// ── EDIT ───────────────────────────────────────────────
 function openEditModal(contact) {
+  const up = s => (s||'').toUpperCase();
   document.getElementById('edit_row').value      = contact._row;
-  document.getElementById('edit_company').value  = contact['COMPANY']       || '';
-  document.getElementById('edit_name').value     = contact['NAME']          || '';
-  document.getElementById('edit_position').value = contact['POSITION']      || '';
+  document.getElementById('edit_company').value  = up(contact['COMPANY']);
+  document.getElementById('edit_name').value     = up(contact['NAME']);
+  document.getElementById('edit_position').value = up(contact['POSITION']);
   document.getElementById('edit_contact1').value = contact['CONTACT#1']     || '';
   document.getElementById('edit_contact2').value = contact['CONTACT#2']     || '';
   document.getElementById('edit_email').value    = contact['EMAIL ADDRESS'] || '';
   document.getElementById('edit_website').value  = contact['WEBSITE']       || '';
+  document.getElementById('edit_address').value  = up(contact['ADDRESS']);
   openModal('editModal');
 }
 async function submitEdit() {
@@ -636,11 +593,11 @@ async function submitEdit() {
   finally { hideLoading(); }
 }
 
-// ── DELETE ─────────────────────────────────────────────────
+// ── DELETE ─────────────────────────────────────────────
 function openDeleteModal(contact) {
   document.getElementById('delete_row').value = contact._row;
   document.getElementById('deleteContactName').textContent =
-    (contact['NAME'] || contact['COMPANY'] || 'this contact');
+    contact['NAME'] || contact['COMPANY'] || 'this contact';
   openModal('deleteModal');
 }
 async function submitDelete() {
@@ -656,28 +613,27 @@ async function submitDelete() {
   finally { hideLoading(); }
 }
 
-// ── SEARCH ─────────────────────────────────────────────────
+// ── SEARCH ─────────────────────────────────────────────
 function doSearch() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   filtered = !q ? [...allContacts] : allContacts.filter(c =>
-    ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE']
-      .some(k => (c[k] || '').toLowerCase().includes(q))
+    ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE','ADDRESS']
+      .some(k => (c[k]||'').toLowerCase().includes(q))
   );
   renderContactsList();
 }
 
-// ── RENDER DASHBOARD ───────────────────────────────────────
+// ── RENDER DASHBOARD ───────────────────────────────────
 function renderDashboard() {
   document.getElementById('statTotal').textContent     = allContacts.length;
   document.getElementById('statCompanies').textContent = new Set(allContacts.map(c=>c['COMPANY']).filter(Boolean)).size;
   document.getElementById('statWithEmail').textContent = allContacts.filter(c=>c['EMAIL ADDRESS']).length;
   document.getElementById('statWithPhone').textContent = allContacts.filter(c=>c['CONTACT#1']||c['CONTACT#2']).length;
   document.getElementById('contactCountLabel').textContent = allContacts.length + ' contacts';
-
   const recent = allContacts.slice(-5).reverse();
   document.getElementById('recentBody').innerHTML = !recent.length
     ? '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">No contacts yet.</td></tr>'
-    : recent.map(c => `<tr>
+    : recent.map(c=>`<tr>
         <td><strong>${esc(c['COMPANY'])}</strong></td>
         <td>${esc(c['NAME'])}</td>
         <td style="color:var(--gray-400);font-size:.79rem;">${esc(c['POSITION'])}</td>
@@ -686,34 +642,32 @@ function renderDashboard() {
       </tr>`).join('');
 }
 
-// ── RENDER CONTACTS ────────────────────────────────────────
+// ── RENDER CONTACTS ────────────────────────────────────
 function renderContactsList() { renderTable(); renderCards(); }
 
-function setContactView(v) {
-  contactView = v;
-  document.getElementById('tableView').style.display  = v==='table' ? 'block':'none';
-  document.getElementById('cardsView').style.display  = v==='cards' ? 'block':'none';
-  document.getElementById('btnTable').classList.toggle('active', v==='table');
-  document.getElementById('btnCards').classList.toggle('active', v==='cards');
+function setContactView(vw) {
+  contactView = vw;
+  document.getElementById('tableView').style.display = vw==='table'?'block':'none';
+  document.getElementById('cardsView').style.display = vw==='cards'?'block':'none';
+  document.getElementById('btnTable').classList.toggle('active', vw==='table');
+  document.getElementById('btnCards').classList.toggle('active', vw==='cards');
 }
 
 function renderTable() {
   const tb = document.getElementById('contactsTableBody');
-  if (!filtered.length) {
-    tb.innerHTML = '<tr class="empty-row"><td colspan="8">No contacts found.</td></tr>';
-    return;
-  }
+  if (!filtered.length) { tb.innerHTML='<tr class="empty-row"><td colspan="9">No contacts found.</td></tr>'; return; }
   tb.innerHTML = filtered.map(c => {
     const idx = allContacts.indexOf(c);
-    const web = c['WEBSITE'] ? `<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//, ''))}</a>` : '';
+    const web = c['WEBSITE'] ? `<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a>` : '';
     return `<tr>
-      <td class="cell-company">${esc(c['COMPANY'])}</td>
+      <td class="c-co">${esc(c['COMPANY'])}</td>
       <td>${esc(c['NAME'])}</td>
-      <td class="cell-pos">${esc(c['POSITION'])}</td>
-      <td class="cell-contact">${esc(c['CONTACT#1'])}</td>
-      <td class="cell-contact">${esc(c['CONTACT#2'])}</td>
-      <td class="cell-link">${c['EMAIL ADDRESS']?`<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>`:''}</td>
-      <td class="cell-link">${web}</td>
+      <td class="c-pos">${esc(c['POSITION'])}</td>
+      <td class="c-ph">${esc(c['CONTACT#1'])}</td>
+      <td class="c-ph">${esc(c['CONTACT#2'])}</td>
+      <td class="c-lnk">${c['EMAIL ADDRESS']?`<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>`:''}</td>
+      <td class="c-lnk">${web}</td>
+      <td class="c-addr">${esc(c['ADDRESS'])}</td>
       <td><div class="action-btns">
         <button class="btn-edit" onclick="openEditModal(allContacts[${idx}])">Edit</button>
         <button class="btn-del"  onclick="openDeleteModal(allContacts[${idx}])">Del</button>
@@ -724,30 +678,22 @@ function renderTable() {
 
 function renderCards() {
   const grid = document.getElementById('contactsCardsGrid');
-  if (!filtered.length) {
-    grid.innerHTML = '<div class="no-data"><p>No contacts found.</p></div>';
-    return;
-  }
+  if (!filtered.length) { grid.innerHTML='<div class="no-data"><p>No contacts found.</p></div>'; return; }
   grid.innerHTML = filtered.map(c => {
     const idx = allContacts.indexOf(c);
-    const av  = initials2(c['NAME'] || c['COMPANY'] || '?');
-    const web = c['WEBSITE']
-      ? `<div class="card-row"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a></div>`
-      : '';
+    const av  = initials2(c['NAME']||c['COMPANY']||'?');
     return `<div class="contact-card">
       <div class="card-top">
-        <div class="card-avatar">${av}</div>
+        <div class="card-av">${av}</div>
         <div><div class="card-name">${esc(c['NAME']||'—')}</div><div class="card-pos">${esc(c['POSITION']||'')}</div></div>
       </div>
-      <div class="card-company">
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-        ${esc(c['COMPANY']||'—')}
-      </div>
+      <div class="card-co">${icoBuilding()} ${esc(c['COMPANY']||'—')}</div>
       <div class="card-info">
-        ${c['CONTACT#1']?`<div class="card-row">${phoneIcon()}${esc(c['CONTACT#1'])}</div>`:''}
-        ${c['CONTACT#2']?`<div class="card-row">${phoneIcon()}${esc(c['CONTACT#2'])}</div>`:''}
-        ${c['EMAIL ADDRESS']?`<div class="card-row">${emailIcon()}<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
-        ${web}
+        ${c['CONTACT#1']?`<div class="card-row">${icoPhone()}${esc(c['CONTACT#1'])}</div>`:''}
+        ${c['CONTACT#2']?`<div class="card-row">${icoPhone()}${esc(c['CONTACT#2'])}</div>`:''}
+        ${c['EMAIL ADDRESS']?`<div class="card-row">${icoEmail()}<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
+        ${c['WEBSITE']?`<div class="card-row">${icoWeb()}<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a></div>`:''}
+        ${c['ADDRESS']?`<div class="card-row">${icoPin()}${esc(c['ADDRESS'])}</div>`:''}
       </div>
       <div class="card-actions">
         <button class="btn btn-outline btn-sm" style="flex:1" onclick="openEditModal(allContacts[${idx}])">Edit</button>
@@ -757,16 +703,16 @@ function renderCards() {
   }).join('');
 }
 
-// ── CAMERA & OCR ───────────────────────────────────────────
+// ── CAMERA ─────────────────────────────────────────────
 async function startCamera() {
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } }
     });
-    const vid = document.getElementById('cameraVideo');
+    const vid = document.getElementById('camVid');
     vid.srcObject = cameraStream;
     vid.style.display = 'block';
-    document.getElementById('camPlaceholder').style.display = 'none';
+    document.getElementById('camPh').style.display      = 'none';
     document.getElementById('btnStartCam').style.display = 'none';
     document.getElementById('btnCapture').style.display  = 'flex';
     document.getElementById('btnStopCam').style.display  = 'flex';
@@ -776,25 +722,28 @@ async function startCamera() {
 
 function stopCamera() {
   if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
-  const vid = document.getElementById('cameraVideo');
-  vid.srcObject = null;
-  vid.style.display = 'none';
-  document.getElementById('camPlaceholder').style.display = 'flex';
+  const vid = document.getElementById('camVid');
+  vid.srcObject = null; vid.style.display = 'none';
+  document.getElementById('camPh').style.display       = 'flex';
   document.getElementById('btnStartCam').style.display = 'flex';
   document.getElementById('btnCapture').style.display  = 'none';
   document.getElementById('btnStopCam').style.display  = 'none';
 }
 
 function captureFrame() {
-  const vid = document.getElementById('cameraVideo');
-  const cvs = document.getElementById('captureCanvas');
+  const vid = document.getElementById('camVid');
+  const cvs = document.getElementById('capCanvas');
   cvs.width = vid.videoWidth; cvs.height = vid.videoHeight;
   cvs.getContext('2d').drawImage(vid, 0, 0);
   capturedImg = cvs.toDataURL('image/png');
   document.getElementById('capturedPreview').src = capturedImg;
-  document.getElementById('capturedWrap').style.display = 'block';
-  document.getElementById('ocrProgressWrap').style.display = 'none';
+  document.getElementById('capturedWrap').style.display  = 'block';
+  document.getElementById('ocrProgWrap').style.display   = 'block';
+  document.getElementById('ocrDoneWrap').style.display   = 'none';
+  document.getElementById('btnRaw').style.display        = 'none';
   stopCamera();
+  // AUTO-RUN OCR immediately after capture
+  runOCR();
 }
 
 function retakePhoto() {
@@ -804,125 +753,241 @@ function retakePhoto() {
   startCamera();
 }
 
+// ── OCR ────────────────────────────────────────────────
 async function runOCR() {
   if (!capturedImg) { toast('Capture an image first', 'error'); return; }
-  document.getElementById('ocrProgressWrap').style.display = 'block';
-  document.getElementById('btnRunOcr').disabled = true;
-  document.getElementById('ocrBarFill').style.width = '0%';
-  document.getElementById('ocrStatusText').textContent = 'Starting Tesseract…';
+  document.getElementById('ocrProgWrap').style.display  = 'block';
+  document.getElementById('ocrDoneWrap').style.display  = 'none';
+  document.getElementById('ocrBarFill').style.width     = '0%';
+  document.getElementById('ocrStatusTxt').textContent   = 'Starting…';
   try {
     const result = await Tesseract.recognize(capturedImg, 'eng', {
       logger: m => {
         if (m.status === 'recognizing text') {
           const pct = Math.round(m.progress * 100);
-          document.getElementById('ocrBarFill').style.width = pct + '%';
-          document.getElementById('ocrStatusText').textContent = 'Recognizing… ' + pct + '%';
+          document.getElementById('ocrBarFill').style.width   = pct + '%';
+          document.getElementById('ocrStatusTxt').textContent = 'Reading card… ' + pct + '%';
         } else {
-          document.getElementById('ocrStatusText').textContent = m.status;
+          document.getElementById('ocrStatusTxt').textContent = m.status;
         }
       }
     });
-    const parsed = parseOCRText(result.data.text);
-    document.getElementById('ocr_company').value  = parsed['COMPANY'];
-    document.getElementById('ocr_name').value     = parsed['NAME'];
-    document.getElementById('ocr_position').value = parsed['POSITION'];
+    const rawText = result.data.text;
+    document.getElementById('ocrRaw').textContent   = rawText;
+    document.getElementById('btnRaw').style.display = 'inline-flex';
+
+    const parsed = parseOCRText(rawText);
+    // Auto-fill — all text fields uppercase
+    document.getElementById('ocr_company').value  = parsed['COMPANY'].toUpperCase();
+    document.getElementById('ocr_name').value     = parsed['NAME'].toUpperCase();
+    document.getElementById('ocr_position').value = parsed['POSITION'].toUpperCase();
     document.getElementById('ocr_contact1').value = parsed['CONTACT#1'];
     document.getElementById('ocr_contact2').value = parsed['CONTACT#2'];
     document.getElementById('ocr_email').value    = parsed['EMAIL ADDRESS'];
     document.getElementById('ocr_website').value  = parsed['WEBSITE'];
-    document.getElementById('ocrBarFill').style.width = '100%';
-    document.getElementById('ocrStatusText').textContent = 'Done — please review the fields →';
-    toast('OCR complete. Review before saving.', 'success');
-  } catch (err) { toast('OCR failed: ' + err.message, 'error'); }
-  finally { document.getElementById('btnRunOcr').disabled = false; }
+    document.getElementById('ocr_address').value  = parsed['ADDRESS'].toUpperCase();
+
+    document.getElementById('ocrBarFill').style.width  = '100%';
+    document.getElementById('ocrProgWrap').style.display = 'none';
+    document.getElementById('ocrDoneWrap').style.display = 'block';
+    toast('Card read! Review and save.', 'success');
+  } catch (err) {
+    document.getElementById('ocrStatusTxt').textContent = 'Failed — try Re-scan';
+    toast('OCR failed: ' + err.message, 'error');
+    document.getElementById('ocrDoneWrap').style.display = 'block';
+  }
 }
 
-// ── OCR PARSER (improved for PH business cards) ────────────
+function toggleRaw() {
+  const box = document.getElementById('ocrRaw');
+  const btn = document.getElementById('btnRaw');
+  const vis = box.style.display !== 'none' && box.style.display !== '';
+  box.style.display = vis ? 'none' : 'block';
+  btn.textContent   = vis ? 'Show Raw OCR Text' : 'Hide Raw OCR Text';
+}
+
+// ════════════════════════════════════════════════════════
+//  OCR PARSER — Improved for Philippine business cards
+// ════════════════════════════════════════════════════════
 function parseOCRText(rawText) {
   const text  = rawText;
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 1);
 
-  // 1. Extract websites (must start with www or http, or end in .com/.ph/.net)
-  const webRx = /(?:https?:\/\/)?(?:www\.)[^\s,;]+|[^\s,;@]+\.(?:com\.ph|com|ph|net|org|co)(?:\/[^\s,;]*)?/gi;
+  // ── 1. EXTRACT EMAILS ──────────────────────────────────
+  const emailRx = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+  const emails  = [...(text.match(emailRx) || [])];
+
+  // Build email domain exclusion set (to avoid treating email domains as websites)
+  const emailDomains = new Set(emails.map(e => {
+    const d = e.split('@')[1] || '';
+    return d.toLowerCase().replace(/^www\./, '');
+  }));
+
+  // ── 2. EXTRACT WEBSITES ────────────────────────────────
+  // Only real website URLs — must start with www or http
+  const webRx = /(?:https?:\/\/)?(?:www\.)[^\s,;)\]]+/gi;
   const websites = [];
   let wm;
   while ((wm = webRx.exec(text)) !== null) {
-    const w = wm[0].trim().replace(/[.,;:)]+$/, '');
-    if (w.length > 5 && !w.includes('@') && !w.match(/^\d/)) websites.push(w);
+    const w = wm[0].trim().replace(/[.,;:)>\]]+$/, '');
+    const domain = w.replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0].toLowerCase();
+    if (w.length > 6 && !emailDomains.has(domain)) websites.push(w);
   }
 
-  // 2. Extract emails
-  const emailRx = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-  const emails  = text.match(emailRx) || [];
+  // ── 3. EXTRACT PHONE NUMBERS ───────────────────────────
+  // Strategy: find all digit sequences with +63/09 prefixes
+  // Mobile: +63 9XX XXX XXXX or 09XX XXX XXXX (11 digits total after 0)
+  // Landline: +63 2 XXXX XXXX or +63 32 XXXX XXXX (with 1–2 digit area code)
+  // Traditional: (02) XXXX-XXXX
+  const phoneMatches = [];
 
-  // 3. Extract PH phone numbers
-  // Mobile: 09XX or +639XX (11 digits)
-  // Landline: (02) or (032) etc.
-  const phoneRx = /(?:\+63|0063|0)\s?9\d{2}[\s.\-]?\d{3}[\s.\-]?\d{4}|\(\d{1,4}\)[\s.\-]?\d{3,4}[\s.\-]?\d{4}/g;
-  const phones  = [];
+  // Mobile — flexible spacing
+  const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
   let pm;
-  while ((pm = phoneRx.exec(text)) !== null) {
-    const p = pm[0].replace(/\s+/g,' ').trim();
-    if (!phones.includes(p)) phones.push(p);
+  while ((pm = mobRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
+
+  // Landline with +63 + area code (1–2 digits) + 8-digit number
+  const landRx = /\+63[\s.\-]*\d{1,2}[\s.\-]*\d{4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/gi;
+  while ((pm = landRx.exec(text)) !== null) {
+    // Avoid duplicating mobile matches
+    if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
+      phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
 
-  // 4. Remove lines that are purely contact info
-  const usedSet = new Set();
-  const cleanLines = lines.filter((line, i) => {
-    if (emails.some(e => line.toLowerCase().includes(e.toLowerCase()))) return false;
-    if (websites.some(w => line.toLowerCase().includes(w.toLowerCase().replace(/^https?:\/\//,'')))) return false;
-    // Pure number lines
-    if (/^[\d\s\-.()+#*]+$/.test(line) && line.replace(/\D/g,'').length >= 7) return false;
-    // Address indicators
-    const addrKw = ['floor','flr','blvd','avenue','street','bldg','building','brgy','barangay',
-                    'city','manila','cebu','makati','pasay','parañaque','quezon','pasig',
-                    'mandaluyong','taguig','paranaque','rizal','cavite','laguna','batangas'];
-    if (addrKw.some(k => line.toLowerCase().includes(k))) return false;
+  // Traditional (02) XXXX-XXXX
+  const tradRx = /\(\d{1,4}\)[\s.\-]*\d{3,4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/g;
+  while ((pm = tradRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
+
+  // Sort by position in document
+  phoneMatches.sort((a, b) => a.idx - b.idx);
+  const phones = phoneMatches.map(p => p.raw.trim());
+
+  // ── 4. ADDRESS KEYWORDS (PH-specific) ─────────────────
+  const addrKw = [
+    'floor','flr.','flr ','fl.','ground floor',
+    'blvd','boulevard','avenue','ave.','street','st.','road','rd.',
+    'bldg','building','brgy','barangay','lot ','block ','unit ','suite ',
+    'subdivision','village','phase','zone',
+    'industrial','highway','national road','circumferential',
+    // PH Cities & Provinces
+    'manila','cebu','makati','pasay','parañaque','paranaque','quezon',
+    'pasig','mandaluyong','taguig','caloocan','marikina','muntinlupa',
+    'las piñas','las pinas','valenzuela','malabon','navotas','san juan',
+    'pateros','bulacan','malolos','maiolos','maalolos','pampanga',
+    'cavite','laguna','batangas','rizal','bataan','pangasinan',
+    'iloilo','davao','zamboanga','cagayan','leyte','samar',
+    'negros','bohol','palawan','isabela','tarlac','nueva ecija',
+    'port area','tmx','southpark','northpark','ayala','ortigas',
+    'bgc','bonifacio','mckinley','alabang','filinvest'
+  ];
+
+  function isAddressLine(line) {
+    const lo = line.toLowerCase();
+    return addrKw.some(k => lo.includes(k));
+  }
+  function containsPhone(line) {
+    return phones.some(p => {
+      // Match first 7 chars of phone
+      const key = p.replace(/[\s.\-]/g,'').substring(0, 7);
+      return line.replace(/[\s.\-]/g,'').includes(key);
+    });
+  }
+  function containsEmail(line) {
+    return emails.some(e => line.toLowerCase().includes(e.toLowerCase()));
+  }
+  function containsWebsite(line) {
+    return websites.some(w => line.toLowerCase().includes(w.toLowerCase().replace(/^https?:\/\//,'')));
+  }
+
+  // ── 5. COLLECT ADDRESS LINES ───────────────────────────
+  const addressLines = lines.filter(line =>
+    isAddressLine(line) && !containsPhone(line) && !containsEmail(line) && !containsWebsite(line)
+  );
+  const address = addressLines.join(' ').replace(/\s+/g,' ').trim();
+
+  // ── 6. CLEAN LINES (remove contact-info lines) ─────────
+  const cleanLines = lines.filter(line => {
+    if (containsEmail(line))   return false;
+    if (containsPhone(line))   return false;
+    if (containsWebsite(line)) return false;
+    if (isAddressLine(line))   return false;
+    // Pure symbol/number lines
+    if (/^[\d\s\-.()+#*,|\\\/]+$/.test(line)) return false;
+    // Lines that are just icons or very short noise
+    if (line.replace(/[^a-zA-Z]/g,'').length < 2) return false;
     return true;
   });
 
-  // 5. Keyword lists
-  const coKw = ['inc.','inc','corp.','corp','co.','ltd','llc','company','lines','cargo',
-    'shipping','logistics','trading','enterprises','group','incorporated','solutions',
-    'services','systems','international','phils.','phils','philippines','freight',
-    'forwarding','transport','adelante','seaborne','metaformation','toolbox','wwe',
-    'ap cargo','apcargo','forwarder','agency','authority','port','marine','air',
-    'sea','express','global','alliance','distribution','supply'];
+  // ── 7. CLASSIFY REMAINING LINES ────────────────────────
+  const coKw = [
+    'inc.','inc','corp.','corp','corporation','co.','ltd','llc',
+    'company','lines','cargo','shipping','logistics','trading',
+    'enterprises','group','incorporated','solutions','services',
+    'systems','international','phils.','phils','philippines',
+    'freight','forwarding','transport','packaging','manufacturing',
+    'construction','development','management','consultancy','ventures',
+    'foundation','association','cooperative','institute','center',
+    'distribution','supply','express','global','alliance','industrial',
+    // Known companies
+    'seaborne','metaformation','toolbox','wwe cargo','ap cargo',
+    'adelante','integrated','apcargo'
+  ];
 
-  const posKw = ['manager','director','executive','officer','president','ceo','coo','cfo',
-    'vp','vice president','vice-president','account representative','key account',
-    'account executive','account officer','consultant','specialist','coordinator',
-    'supervisor','head','chief associate','broker','agent','sales','business dev',
-    'business development','marketing','operations','general manager','sales manager',
-    'trade manager','branch manager','proprietor','owner'];
+  const posKw = [
+    'manager','director','executive','officer','president','ceo','coo','cfo',
+    'vp','vice president','vice-president','general manager',
+    'account representative','key account','account executive','account officer',
+    'consultant','specialist','coordinator','supervisor','head',
+    'chief','associate','broker','agent','representative',
+    'sales','marketing','business development','business dev',
+    'operations','branch manager','trade manager','sales manager',
+    'proprietor','owner','clerk','assistant','secretary',
+    'treasurer','procurement','purchaser','liaison',
+    'technician','engineer','analyst','auditor','designer'
+  ];
 
-  let company = '', position = '', name = '';
+  // Helper: does a line look like a PERSON'S name?
+  // Pattern: 2–4 words, may include a single-letter initial (e.g. "D.")
+  // Exclude: anything that looks like a brand/logo abbreviation
+  function looksLikeName(line) {
+    const clean = line.replace(/[^A-Za-z.\s'-]/g,'').trim();
+    const words = clean.split(/\s+/).filter(Boolean);
+    // Has middle initial like "D."
+    const hasInitial = words.some(w => /^[A-Z]\.$/.test(w));
+    // 2–4 words, has at least one letter, not all one-char words
+    const rightLen = words.length >= 2 && words.length <= 4;
+    const hasRealWord = words.some(w => w.replace(/\./g,'').length > 1);
+    return rightLen && hasRealWord && (hasInitial || words.every(w => /^[A-Z]/.test(w) || /^[a-z]/.test(w)));
+  }
+
   const used = new Set();
+  let company = '', position = '', name = '';
 
-  // Step A: Find COMPANY
-  // Priority 1: line with company keyword
+  // FIND COMPANY — keyword match first
   cleanLines.forEach((line, i) => {
     if (company) return;
-    const lo = line.toLowerCase();
+    const lo = line.toLowerCase().replace(/[\\\/|*]/g,'');
     if (coKw.some(k => lo.includes(k))) {
-      company = line.replace(/\*/g,'').trim();
+      company = line.replace(/^[^A-Za-z]+/, '').trim(); // strip leading noise chars
       used.add(i);
     }
   });
-  // Priority 2: ALL CAPS line (often company name on cards)
+
+  // FIND COMPANY fallback — ALL CAPS line that is NOT a person's name
   if (!company) {
     cleanLines.forEach((line, i) => {
       if (company || used.has(i)) return;
-      const stripped = line.replace(/[^A-Za-z\s]/g,'').trim();
-      if (stripped.length > 4 && stripped === stripped.toUpperCase() && /[A-Z]{3,}/.test(stripped)) {
-        company = line.trim();
+      const stripped = line.replace(/[^A-Za-z\s.&,-]/g,'').trim();
+      const isAllCaps = stripped.length > 4 && stripped === stripped.toUpperCase();
+      const notName   = !looksLikeName(line);
+      if (isAllCaps && notName) {
+        company = line.replace(/^[^A-Za-z]+/, '').trim();
         used.add(i);
       }
     });
   }
 
-  // Step B: Find POSITION — exact match on title keywords
-  // Try full-line match first (line IS the title)
+  // FIND POSITION — keyword match
   cleanLines.forEach((line, i) => {
     if (position || used.has(i)) return;
     const lo = line.toLowerCase();
@@ -932,36 +997,34 @@ function parseOCRText(rawText) {
     }
   });
 
-  // Step C: Find NAME — proper-case 2–4 word line, not a URL/address
-  // Names on PH business cards: often "Firstname M. Lastname" or "FIRSTNAME LASTNAME"
+  // FIND NAME — proper-case 2–4 word line
   cleanLines.forEach((line, i) => {
     if (name || used.has(i)) return;
-    const words = line.split(/\s+/).filter(Boolean);
-    const notUrl = !line.includes('.') || /[A-Z][a-z]/.test(line);
-    const notNum = !/^\+/.test(line) && line.replace(/\D/g,'').length < 5;
-    const rightLen = words.length >= 2 && words.length <= 5;
-    const hasLetter = /[A-Za-z]/.test(line);
-    if (rightLen && notUrl && notNum && hasLetter && line.length < 55) {
-      name = line.trim();
+    const clean = line.replace(/^[^A-Za-z]+/, '').trim(); // strip leading noise
+    const words = clean.split(/\s+/).filter(Boolean);
+    const noSpecial = !/[@#$%^&*+=[\]{};:"\/]/.test(clean);
+    const noNum     = clean.replace(/[A-Za-z.\s'-]/g,'').length < 3;
+    const rightLen  = words.length >= 2 && words.length <= 5;
+    const hasLetter = /[A-Za-z]{2,}/.test(clean);
+    if (rightLen && noSpecial && noNum && hasLetter && clean.length < 58) {
+      name = clean;
       used.add(i);
     }
   });
 
-  // Format phones to +63 standard for mobile
+  // ── 8. FORMAT PHONES ───────────────────────────────────
   function formatPH(num) {
     if (!num) return '';
-    const clean = num.replace(/\s+/g,' ').trim();
-    // Mobile starting with 09 → +63 9XX XXX XXXX
+    const clean = num.replace(/\s+/g, ' ').trim();
+    // Mobile 09XX → +63 9XX XXX XXXX
     const mob = clean.replace(/[\s.\-]/g,'');
     if (/^09\d{9}$/.test(mob)) {
-      return '+63 ' + mob.substring(1,4) + ' ' + mob.substring(4,7) + ' ' + mob.substring(7);
+      return '+63 ' + mob[1]+mob[2]+mob[3] + ' ' + mob[4]+mob[5]+mob[6] + ' ' + mob[7]+mob[8]+mob[9]+mob[10];
     }
-    // Already +63
-    if (clean.startsWith('+63')) return clean;
     return clean;
   }
 
-  // Format website
+  // ── 9. FORMAT WEBSITE ──────────────────────────────────
   let website = websites[0] || '';
   if (website && !/^https?:\/\//i.test(website)) website = 'https://' + website;
 
@@ -969,79 +1032,79 @@ function parseOCRText(rawText) {
     'COMPANY':       company,
     'NAME':          name,
     'POSITION':      position,
-    'CONTACT#1':     formatPH(phones[0]),
-    'CONTACT#2':     formatPH(phones[1]),
+    'CONTACT#1':     formatPH(phones[0] || ''),
+    'CONTACT#2':     formatPH(phones[1] || ''),
     'EMAIL ADDRESS': emails[0] || '',
-    'WEBSITE':       website
+    'WEBSITE':       website,
+    'ADDRESS':       address
   };
 }
 
-// ── FORM HELPERS ────────────────────────────────────────────
+// ── FORM HELPERS ────────────────────────────────────────
 function gatherForm(prefix) {
+  const up = s => (s||'').toUpperCase();
   return {
-    'COMPANY':       v(prefix+'_company'),
-    'NAME':          v(prefix+'_name'),
-    'POSITION':      v(prefix+'_position'),
-    'CONTACT#1':     v(prefix+'_contact1'),
+    'COMPANY':       up(v(prefix+'_company')),
+    'NAME':          up(v(prefix+'_name')),
+    'POSITION':      up(v(prefix+'_position')),
+    'CONTACT#1':     v(prefix+'_contact1'),      // keep original formatting
     'CONTACT#2':     v(prefix+'_contact2'),
     'EMAIL ADDRESS': v(prefix+'_email'),
-    'WEBSITE':       v(prefix+'_website')
+    'WEBSITE':       v(prefix+'_website'),
+    'ADDRESS':       up((document.getElementById(prefix+'_address')||{value:''}).value.trim())
   };
 }
 function clearAddForm() {
-  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email','add_website']
+  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email','add_website','add_address']
     .forEach(id => document.getElementById(id).value = '');
 }
 function clearOCRForm() {
-  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email','ocr_website']
+  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email','ocr_website','ocr_address']
     .forEach(id => document.getElementById(id).value = '');
 }
 
-// ── MODALS ─────────────────────────────────────────────────
+// ── MODALS ─────────────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); });
 });
 
-// ── LOADING ────────────────────────────────────────────────
+// ── LOADING ────────────────────────────────────────────
 function showLoading(msg) {
   document.getElementById('loadingText').textContent = msg||'Loading…';
   document.getElementById('loadingOverlay').style.display = 'flex';
 }
 function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
-// ── TOAST ──────────────────────────────────────────────────
+// ── TOAST ──────────────────────────────────────────────
 function toast(msg, type='info') {
   const wrap = document.getElementById('toastWrap');
   const el   = document.createElement('div');
   el.className = 'toast ' + type;
-  el.innerHTML = `
-    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-      ${type==='success'?'<polyline points="20 6 9 17 4 12"/>':
-        type==='error'?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>':
-        '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="currentColor"/>'}
-    </svg>${esc(msg)}`;
+  const ico = type==='success'?'<polyline points="20 6 9 17 4 12"/>':
+              type==='error'  ?'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>':
+                               '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>';
+  el.innerHTML = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">${ico}</svg>${esc(msg)}`;
   wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .4s'; setTimeout(()=>el.remove(),400); }, 3200);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .4s'; setTimeout(()=>el.remove(),400); }, 3500);
 }
 
-// ── UTILITIES ──────────────────────────────────────────────
-function v(id) { return (document.getElementById(id).value||'').trim(); }
+// ── UTILITIES ──────────────────────────────────────────
+function v(id) { return (document.getElementById(id)||{value:''}).value.trim(); }
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function initials2(name) {
-  const p = name.trim().split(/\s+/);
+function initials2(n) {
+  const p = n.trim().split(/\s+/);
   return p.length===1 ? p[0].substring(0,2).toUpperCase() : (p[0][0]+(p[p.length-1][0]||'')).toUpperCase();
 }
-function phoneIcon() {
-  return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.89 12 19.79 19.79 0 0 1 1.82 3.42 2 2 0 0 1 3.84 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1-1c.61-.59 1.53-.77 2.31-.45a12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
-}
-function emailIcon() {
-  return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
-}
+function icoPhone()   { return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.89 12 19.79 19.79 0 0 1 1.82 3.42 2 2 0 0 1 3.84 1.24h3a2 2 0 0 1 2 1.72c.128.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.572 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`; }
+function icoEmail()   { return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`; }
+function icoWeb()     { return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`; }
+function icoPin()     { return `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`; }
+function icoBuilding(){ return `<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`; }
 </script>
 </body>
 </html>
