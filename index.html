@@ -799,37 +799,45 @@ async function runOCR() {
         }
       }
     });
-    // ── CONFIDENCE-FILTERED TEXT RECONSTRUCTION ──────────
-    // Tesseract scores each word 0-100. QR code noise / icon OCR artifacts
-    // score < 50. Real printed text typically scores 60-100.
-    // We rebuild the text using only high-confidence words, grouped by Y-position,
-    // to eliminate QR-code garbage, icon misreads, and background noise.
-    let rawText;
-    const wordData = result.data.words || [];
-    if (wordData.length >= 3) {
-      const goodWords = wordData.filter(w => w.confidence >= 55 && w.text.trim().length > 0);
+    // ── DUAL-TEXT STRATEGY ────────────────────────────────
+    // 1. FULL text  → extract phones, emails, websites (need every digit/char)
+    // 2. FILTERED text (confidence ≥ 40 lines) → classify name/company/position
+    //    (removes QR-code garbage and icon noise without losing structured data)
+    const fullRawText = result.data.text;
+
+    // Use Tesseract's own line boundaries (respects two-column layouts better
+    // than our manual Y-bucket approach)
+    const lineData = result.data.lines || [];
+    let filteredText;
+    if (lineData.length >= 2) {
+      filteredText = lineData
+        .filter(l => l.confidence >= 40)
+        .map(l => l.text.trim())
+        .filter(l => l.length > 1 && l.replace(/[^a-zA-Z]/g,'').length >= 2)
+        .join('\n');
+    } else {
+      // Fallback: word-level reconstruction
+      const goodWords = (result.data.words || []).filter(w => w.confidence >= 50 && w.text.trim().length > 0);
       if (goodWords.length >= 2) {
-        // Group words by approximate line (bucket Y-coordinates by 20px)
         const lineMap = {};
         goodWords.forEach(w => {
           const lineKey = Math.round(w.bbox.y0 / 20) * 20;
           if (!lineMap[lineKey]) lineMap[lineKey] = [];
           lineMap[lineKey].push(w);
         });
-        rawText = Object.keys(lineMap)
+        filteredText = Object.keys(lineMap)
           .sort((a, b) => parseInt(a) - parseInt(b))
           .map(y => lineMap[y].sort((a, b) => a.bbox.x0 - b.bbox.x0).map(w => w.text).join(' '))
           .join('\n');
       } else {
-        rawText = result.data.text; // fallback if too few confident words
+        filteredText = fullRawText;
       }
-    } else {
-      rawText = result.data.text;
     }
+    const rawText = filteredText || fullRawText;
     document.getElementById('ocrRaw').textContent   = rawText;
     document.getElementById('btnRaw').style.display = 'inline-flex';
 
-    const parsed = parseOCRText(rawText);
+    const parsed = parseOCRText(rawText, fullRawText);
     // Auto-fill — all text fields uppercase
     document.getElementById('ocr_company').value  = parsed['COMPANY'].toUpperCase();
     document.getElementById('ocr_name').value     = parsed['NAME'].toUpperCase();
@@ -862,15 +870,19 @@ function toggleRaw() {
 // ════════════════════════════════════════════════════════
 //  OCR PARSER — Improved for Philippine business cards
 // ════════════════════════════════════════════════════════
-function parseOCRText(rawText) {
+function parseOCRText(rawText, fullText) {
+  // rawText  = confidence-filtered text → used for name/company/position line classification
+  // fullText = complete raw OCR output   → used for phone/email/website extraction
+  //            (structured data like digits/@ need every character, even low-confidence ones)
   const text  = rawText;
+  const sText = fullText || rawText;   // structured-data source
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 1);
 
   // ── 1. EXTRACT EMAILS ──────────────────────────────────
   // Loose: allow OCR spaces around @ and before TLD (e.g. "donna @intpackcorp .com")
   const emailRxLoose = /[a-zA-Z0-9._%+\-]+\s*@\s*[a-zA-Z0-9.\-]+(?:\s*\.\s*[a-zA-Z]{2,})+/g;
   const emails = [...new Set(
-    [...(text.match(emailRxLoose) || [])].map(e => e.replace(/\s+/g, ''))   // remove OCR spaces
+    [...(sText.match(emailRxLoose) || [])].map(e => e.replace(/\s+/g, ''))  // remove OCR spaces
   )];
 
   // Build email domain exclusion set
@@ -884,7 +896,7 @@ function parseOCRText(rawText) {
   const webRx = /(?:https?:\/\/[^\s,;)\]]+|www\.[^\s,;)\]]+|[a-zA-Z0-9\-]+\.(?:com\.ph|net\.ph|org\.ph|com|net|org|ph)(?:\/[^\s,;)\]]*)?)/gi;
   const websites = [];
   let wm;
-  while ((wm = webRx.exec(text)) !== null) {
+  while ((wm = webRx.exec(sText)) !== null) {
     const w = wm[0].trim().replace(/[.,;:)>\]]+$/, '');
     const domain = w.replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0].toLowerCase();
     // Must look like a real domain (has a dot, not an email domain, not too short)
@@ -899,25 +911,25 @@ function parseOCRText(rawText) {
 
   // Mobile: +63 9XX or 09XX (11-digit PH mobile)
   const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
-  while ((pm = mobRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
+  while ((pm = mobRx.exec(sText)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
 
   // Landline: +63 + 1–2 digit area code + 8-digit local (with optional "to/ext" range)
   const landRx = /\+63[\s.\-]*\d{1,2}[\s.\-]*\d{4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/gi;
-  while ((pm = landRx.exec(text)) !== null) {
+  while ((pm = landRx.exec(sText)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
       phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
 
   // Traditional (02) XXXX-XXXX with parens
   const tradRx = /\(\d{1,4}\)[\s.\-]*\d{3,4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/g;
-  while ((pm = tradRx.exec(text)) !== null) {
+  while ((pm = tradRx.exec(sText)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
       phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
 
   // PH Landline without parens: 02 XXXX XXXX or 032 XXXX XXXX (0 + 1-2 digit area + 8 digits)
   const ld0Rx = /\b0\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4}\b/g;
-  while ((pm = ld0Rx.exec(text)) !== null) {
+  while ((pm = ld0Rx.exec(sText)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
       phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
@@ -971,6 +983,7 @@ function parseOCRText(rawText) {
   address = address.replace(/\bO\s*O\b/gi, '').replace(/\s{2,}/g,' ').trim(); // remove "OO"/"O O" OCR artifact
   address = address.replace(/^[A-Z]{2,3}\s+(?=\d)/, '').trim();              // strip leading "DD "/"OO " before digit
   address = address.replace(/\s+\d\s*$/, '').trim();                          // remove trailing lone digit
+  address = address.replace(/\b(SCAN\s+FOR\s+WEBSITE|WEBSITE|FOLLOW\s+US|SCAN\s+ME|SCAN\s+HERE)\b\s*/gi, '').trim(); // remove QR-code label noise
 
   // ── 6. CLEAN LINES (remove contact-info lines) ─────────
   const cleanLines = lines.filter(line => {
