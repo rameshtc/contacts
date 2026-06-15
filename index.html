@@ -1002,32 +1002,41 @@ function parseOCRText(rawText, fullText) {
   const phoneMatches = [];
   let pm;
 
+  // OCR sometimes reads "0" as capital "O" — fix this in a copy before phone extraction
+  const sTextPhones = sText.replace(/\bO(9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4})/g, '0$1')  // O9xx → 09xx
+                           .replace(/\bO(\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4})/g, '0$1'); // O2 → 02
+
   // Mobile: +63 9XX or 09XX (11-digit PH mobile)
   const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
-  while ((pm = mobRx.exec(sText)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
+  while ((pm = mobRx.exec(sTextPhones)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index, mobile: true });
 
   // Landline: +63 + 1–2 digit area code + 8-digit local (with optional "to/ext" range)
   const landRx = /\+63[\s.\-]*\d{1,2}[\s.\-]*\d{4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/gi;
-  while ((pm = landRx.exec(sText)) !== null) {
+  while ((pm = landRx.exec(sTextPhones)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
-      phoneMatches.push({ raw: pm[0], idx: pm.index });
+      phoneMatches.push({ raw: pm[0], idx: pm.index, mobile: false });
   }
 
   // Traditional (02) XXXX-XXXX with parens
   const tradRx = /\(\d{1,4}\)[\s.\-]*\d{3,4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/g;
-  while ((pm = tradRx.exec(sText)) !== null) {
+  while ((pm = tradRx.exec(sTextPhones)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
-      phoneMatches.push({ raw: pm[0], idx: pm.index });
+      phoneMatches.push({ raw: pm[0], idx: pm.index, mobile: false });
   }
 
-  // PH Landline without parens: 02 XXXX XXXX or 032 XXXX XXXX (0 + 1-2 digit area + 8 digits)
+  // PH Landline without parens: 02 XXXX XXXX or 032 XXXX XXXX
   const ld0Rx = /\b0\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4}\b/g;
-  while ((pm = ld0Rx.exec(sText)) !== null) {
+  while ((pm = ld0Rx.exec(sTextPhones)) !== null) {
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
-      phoneMatches.push({ raw: pm[0], idx: pm.index });
+      phoneMatches.push({ raw: pm[0], idx: pm.index, mobile: false });
   }
 
-  phoneMatches.sort((a, b) => a.idx - b.idx);
+  // Sort: mobiles first, then landlines; within each group, by position in text
+  phoneMatches.sort((a, b) => {
+    if (a.mobile && !b.mobile) return -1;
+    if (!a.mobile && b.mobile) return 1;
+    return a.idx - b.idx;
+  });
   const phones = phoneMatches.map(p => p.raw.trim());
 
   // ── 4. ADDRESS KEYWORDS (PH-specific) ─────────────────
@@ -1195,6 +1204,11 @@ function parseOCRText(rawText, fullText) {
     const words = line.toLowerCase().split(/\s+/).map(w => w.replace(/[^a-z]/g,''));
     return words.filter(w => taglineWords.has(w)).length >= 2;
   }
+  // Lines like "SINCE 1930", "EST. 1975", "FOUNDED 2001", or standalone years → not company name parts
+  function isYearOrSince(line) {
+    return /\b(since|est\.?|established|founded|incorporated)\b/i.test(line) ||
+           /^\s*\d{4}\s*$/.test(line);
+  }
 
   const used = new Set();
   let company = '', position = '', name = '';
@@ -1238,7 +1252,8 @@ function parseOCRText(rawText, fullText) {
     for (let j = i - 1; j >= Math.max(0, i - 3); j--) {
       if (used.has(j)) break;
       const prev = cleanLines[j];
-      if (looksLikeName(prev) || hasPosKw(prev) || prev.length > 50) break;
+      if (looksLikeName(prev) || hasPosKw(prev) || isTagline(prev) ||
+          isYearOrSince(prev) || isAddressLine(prev) || prev.length > 50) break;
       parts.unshift({ idx: j, text: prev });
       used.add(j);
     }
@@ -1247,9 +1262,10 @@ function parseOCRText(rawText, fullText) {
     for (let j = i + 1; j <= Math.min(cleanLines.length - 1, i + 3); j++) {
       if (used.has(j)) break;
       const next = cleanLines[j];
-      // Stop if: name, position, tagline/slogan, quoted text, or too long
-      if (looksLikeName(next) || hasPosKw(next) || isTagline(next) || next.length > 50) break;
-      if (/["'"']/.test(next)) break;  // has quotes → probably a tagline
+      // Stop if: name, position, tagline, year/since, address, quoted text, or too long
+      if (looksLikeName(next) || hasPosKw(next) || isTagline(next) ||
+          isYearOrSince(next) || isAddressLine(next) || next.length > 50) break;
+      if (/["'"']/.test(next)) break;  // has quotes → tagline like "Taste Fit For A King"
       parts.push({ idx: j, text: next });
       used.add(j);
     }
