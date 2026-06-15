@@ -1002,13 +1002,25 @@ function parseOCRText(rawText, fullText) {
   const phoneMatches = [];
   let pm;
 
-  // OCR sometimes reads "0" as capital "O" — fix this in a copy before phone extraction
-  const sTextPhones = sText.replace(/\bO(9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4})/g, '0$1')  // O9xx → 09xx
-                           .replace(/\bO(\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4})/g, '0$1'); // O2 → 02
+  // OCR sometimes reads "0" as capital "O" or icon chars corrupt the leading digit.
+  // Normalize: O9xx → 09xx, also strip common icon garbage characters before digits.
+  const sTextPhones = sText
+    .replace(/\bO(9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4})/g, '0$1')   // O9xx → 09xx (mobile)
+    .replace(/\bO(\d{1,2}[\s.\-]+\d{4}[\s.\-]*\d{4})/g, '0$1')  // O2 XXXX → 02 XXXX (landline)
+    // Strip non-alphanumeric icon chars that appear directly before a PH phone digit sequence
+    .replace(/[^\w\s+\-.()/,](?=\s*0?9\d{9})/g, ' ')
+    .replace(/[^\w\s+\-.()/,](?=\s*0\d{1,2}[\s.\-]\d{4})/g, ' ');
 
-  // Mobile: +63 9XX or 09XX (11-digit PH mobile)
+  // Mobile: +63 9XX or 09XX (11-digit PH mobile), with or without separators
   const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
   while ((pm = mobRx.exec(sTextPhones)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index, mobile: true });
+
+  // Catch-all: raw 11-digit mobile 09XXXXXXXXX (no separators at all — common in PH cards)
+  const rawMobRx = /(?<![0-9])(09[0-9]{9})(?![0-9])/g;
+  while ((pm = rawMobRx.exec(sTextPhones)) !== null) {
+    if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
+      phoneMatches.push({ raw: pm[1], idx: pm.index, mobile: true });
+  }
 
   // Landline: +63 + 1–2 digit area code + 8-digit local (with optional "to/ext" range)
   const landRx = /\+63[\s.\-]*\d{1,2}[\s.\-]*\d{4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/gi;
@@ -1105,6 +1117,21 @@ function parseOCRText(rawText, fullText) {
   address = address.replace(/^[A-Z]{2,3}\s+(?=\d)/, '').trim();              // strip leading "DD "/"OO " before digit
   address = address.replace(/\s+\d\s*$/, '').trim();                          // remove trailing lone digit
   address = address.replace(/\b(SCAN\s+FOR\s+WEBSITE|WEBSITE|FOLLOW\s+US|SCAN\s+ME|SCAN\s+HERE)\b\s*/gi, '').trim(); // remove QR-code label noise
+  // Strip OCR garbage tokens before the first real address keyword (LOT, BLK, UNIT, BLDG, #, No., etc.)
+  address = (function(addr) {
+    const addrKwRx = /\b(LOT|BLK|BLOCK|UNIT|BLDG|BUILDING|FLOOR|FL|RM|ROOM|NO\.?|#|PHASE|PUROK|BARANGAY|BRGY|BGY|SITIO|STREET|ST\.?|AVE\.?|AVENUE|ROAD|RD\.?|DRIVE|DR\.?|BLVD|BOULEVARD|HIGHWAY|HWY|CORNER|COR\.?|SUBD|SUBDIVISION|VILLAGE|VLG|POBLACION|DISTRICT)\b/i;
+    const m = addrKwRx.exec(addr);
+    if (!m || m.index === 0) return addr; // already starts with keyword
+    // Only strip prefix if everything before the keyword looks like garbage
+    const prefix = addr.slice(0, m.index).trim();
+    const prefixWords = prefix.split(/\s+/);
+    const allNoise = prefixWords.every(w =>
+      /[^A-Za-z0-9\s]/.test(w) ||           // has special char
+      (w.length <= 3 && /^\d+$/.test(w)) ||  // short number (1-3 digits)
+      (w.length <= 2)                         // lone 1-2 letter token
+    );
+    return allNoise ? addr.slice(m.index).trim() : addr;
+  })(address);
 
   // ── 6. CLEAN LINES (remove contact-info lines) ─────────
   const cleanLines = lines.filter(line => {
@@ -1271,11 +1298,17 @@ function parseOCRText(rawText, fullText) {
     }
 
     company = parts
-      .map(p => p.text.replace(/^[^A-Za-z]+/, '').trim())          // strip leading noise
+      .map(p => p.text.replace(/^[^A-Za-z]+/, '').trim())          // strip leading noise chars
       .filter(p => p.replace(/[^A-Za-z]/g,'').length >= 2)          // drop pure-symbol remnants
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
+    // Strip OCR garbage words: words containing ! ? | or other impossible punctuation
+    company = company.split(/\s+/)
+      .filter(w => !/[!?|@#$%^&*=~`]/.test(w))                     // remove "SRIDGEMER!" etc
+      .join(' ').trim();
+    // Strip lone 1-2 letter words at the start if followed by a real company word
+    company = company.replace(/^([A-Z]{1,2}\s+)+(?=[A-Z]{3,})/, '').trim();
   });
 
   // FIND COMPANY fallback — ALL CAPS non-name line
