@@ -910,10 +910,11 @@ function parseOCRText(rawText) {
   );
   let address = addressLines.join(' ').replace(/\s+/g,' ').trim();
   // Clean common OCR noise in addresses
-  address = address.replace(/^[^A-Za-z0-9]+/, '').trim();                   // strip leading icon noise [Q] etc
-  address = address.replace(/\[.*?\]/g, '').replace(/\s{2,}/g,' ').trim();  // remove [Q] [o] bracket noise
-  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();   // remove "OO" OCR artifact
-  address = address.replace(/\s+\d\s*$/, '').trim();                         // remove trailing lone digit
+  address = address.replace(/^[^A-Za-z0-9]+/, '').trim();                    // strip leading icon noise [Q] etc
+  address = address.replace(/\[.*?\]/g, '').replace(/\s{2,}/g,' ').trim();   // remove [Q] [o] bracket noise
+  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();    // remove "OO" OCR artifact
+  address = address.replace(/^[A-Z]{2,3}\s+(?=\d)/, '').trim();              // strip leading "DD "/"OO " before digit
+  address = address.replace(/\s+\d\s*$/, '').trim();                          // remove trailing lone digit
 
   // ── 6. CLEAN LINES (remove contact-info lines) ─────────
   const cleanLines = lines.filter(line => {
@@ -976,6 +977,15 @@ function parseOCRText(rawText) {
   function hasPosKw(line) {
     return posKw.some(k => line.toLowerCase().includes(k));
   }
+  // Detect taglines/slogans: lines with 2+ common English connective/filler words
+  const taglineWords = new Set(['we','the','for','you','our','your','best','choose','select',
+    'provide','deliver','offer','trust','quality','service','excellence','committed',
+    'dedicated','with','and','all','in','of','to','by','is','are','can','always',
+    'bringing','serving','giving','leading','building','creating','making']);
+  function isTagline(line) {
+    const words = line.toLowerCase().split(/\s+/).map(w => w.replace(/[^a-z]/g,''));
+    return words.filter(w => taglineWords.has(w)).length >= 2;
+  }
 
   const used = new Set();
   let company = '', position = '', name = '';
@@ -1001,7 +1011,9 @@ function parseOCRText(rawText) {
     for (let j = i + 1; j <= Math.min(cleanLines.length - 1, i + 3); j++) {
       if (used.has(j)) break;
       const next = cleanLines[j];
-      if (looksLikeName(next) || hasPosKw(next) || next.length > 50) break;
+      // Stop if: name, position, tagline/slogan, quoted text, or too long
+      if (looksLikeName(next) || hasPosKw(next) || isTagline(next) || next.length > 50) break;
+      if (/["'"']/.test(next)) break;  // has quotes → probably a tagline
       parts.push({ idx: j, text: next });
       used.add(j);
     }
@@ -1036,11 +1048,17 @@ function parseOCRText(rawText) {
     pos = pos.replace(/\s*[.\-]\s*[A-Z]{2,}(\s+[A-Z]{2,})*\s*$/, '').trim();
     // Strip trailing all-caps noise words that aren't position words
     const posWords = pos.split(/\s+/);
+    // Strip trailing 2-3 char all-caps noise (e.g. "HO", "RA")
     while (posWords.length > 1) {
       const last = posWords[posWords.length - 1];
-      if (/^[A-Z]{2,3}$/.test(last) && !posKw.some(k => last.toLowerCase() === k)) {
-        posWords.pop();
-      } else break;
+      if (/^[A-Z]{2,3}$/.test(last) && !posKw.some(k => last.toLowerCase() === k)) posWords.pop();
+      else break;
+    }
+    // Strip leading 1-3 char noise (e.g. "ES" before "MANAGER" from OCR dropping "SAL")
+    while (posWords.length > 1) {
+      const first = posWords[0];
+      if (first.replace(/\./g,'').length <= 3 && !posKw.some(k => first.toLowerCase().startsWith(k))) posWords.shift();
+      else break;
     }
     position = posWords.join(' ');
     used.add(i);
@@ -1049,6 +1067,8 @@ function parseOCRText(rawText) {
   // FIND NAME — proper-case 2–5 word line, strip trailing and leading OCR noise
   cleanLines.forEach((line, i) => {
     if (name || used.has(i)) return;
+    // Skip taglines/slogans and lines with quote characters
+    if (isTagline(line) || /["'"']/.test(line)) return;
     const clean = line.replace(/^[^A-Za-z]+/, '').trim();
     const words = clean.split(/\s+/).filter(Boolean);
     const noSpecial = !/[@#$%^&*+=[\]{};:"\/]/.test(clean);
