@@ -817,14 +817,13 @@ function parseOCRText(rawText) {
   const emailRx = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
   const emails  = [...(text.match(emailRx) || [])];
 
-  // Build email domain exclusion set (to avoid treating email domains as websites)
+  // Build email domain exclusion set
   const emailDomains = new Set(emails.map(e => {
     const d = e.split('@')[1] || '';
     return d.toLowerCase().replace(/^www\./, '');
   }));
 
   // ── 2. EXTRACT WEBSITES ────────────────────────────────
-  // Only real website URLs — must start with www or http
   const webRx = /(?:https?:\/\/)?(?:www\.)[^\s,;)\]]+/gi;
   const websites = [];
   let wm;
@@ -835,21 +834,16 @@ function parseOCRText(rawText) {
   }
 
   // ── 3. EXTRACT PHONE NUMBERS ───────────────────────────
-  // Strategy: find all digit sequences with +63/09 prefixes
-  // Mobile: +63 9XX XXX XXXX or 09XX XXX XXXX (11 digits total after 0)
-  // Landline: +63 2 XXXX XXXX or +63 32 XXXX XXXX (with 1–2 digit area code)
-  // Traditional: (02) XXXX-XXXX
   const phoneMatches = [];
-
-  // Mobile — flexible spacing
-  const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
   let pm;
+
+  // Mobile: +63 9XX or 09XX (11-digit PH mobile)
+  const mobRx = /(?:\+63|0{1,2}63|0)[\s.\-]*9\d{2}[\s.\-]*\d{3}[\s.\-]*\d{4}/g;
   while ((pm = mobRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
 
-  // Landline with +63 + area code (1–2 digits) + 8-digit number
+  // Landline: +63 + 1–2 digit area code + 8-digit local (with optional "to/ext" range)
   const landRx = /\+63[\s.\-]*\d{1,2}[\s.\-]*\d{4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/gi;
   while ((pm = landRx.exec(text)) !== null) {
-    // Avoid duplicating mobile matches
     if (!phoneMatches.some(p => Math.abs(p.idx - pm.index) < 4))
       phoneMatches.push({ raw: pm[0], idx: pm.index });
   }
@@ -858,7 +852,6 @@ function parseOCRText(rawText) {
   const tradRx = /\(\d{1,4}\)[\s.\-]*\d{3,4}[\s.\-]*\d{4}(?:[\s]*(?:to|ext|loc|x|#)[\s]*\d+)?/g;
   while ((pm = tradRx.exec(text)) !== null) phoneMatches.push({ raw: pm[0], idx: pm.index });
 
-  // Sort by position in document
   phoneMatches.sort((a, b) => a.idx - b.idx);
   const phones = phoneMatches.map(p => p.raw.trim());
 
@@ -869,7 +862,6 @@ function parseOCRText(rawText) {
     'bldg','building','brgy','barangay','lot ','block ','unit ','suite ',
     'subdivision','village','phase','zone',
     'industrial','highway','national road','circumferential',
-    // PH Cities & Provinces
     'manila','cebu','makati','pasay','parañaque','paranaque','quezon',
     'pasig','mandaluyong','taguig','caloocan','marikina','muntinlupa',
     'las piñas','las pinas','valenzuela','malabon','navotas','san juan',
@@ -887,7 +879,6 @@ function parseOCRText(rawText) {
   }
   function containsPhone(line) {
     return phones.some(p => {
-      // Match first 7 chars of phone
       const key = p.replace(/[\s.\-]/g,'').substring(0, 7);
       return line.replace(/[\s.\-]/g,'').includes(key);
     });
@@ -903,7 +894,10 @@ function parseOCRText(rawText) {
   const addressLines = lines.filter(line =>
     isAddressLine(line) && !containsPhone(line) && !containsEmail(line) && !containsWebsite(line)
   );
-  const address = addressLines.join(' ').replace(/\s+/g,' ').trim();
+  let address = addressLines.join(' ').replace(/\s+/g,' ').trim();
+  // Clean common OCR noise in addresses
+  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();  // remove "OO" OCR artifact
+  address = address.replace(/\s+\d\s*$/, '').trim();                        // remove trailing lone digit
 
   // ── 6. CLEAN LINES (remove contact-info lines) ─────────
   const cleanLines = lines.filter(line => {
@@ -911,9 +905,7 @@ function parseOCRText(rawText) {
     if (containsPhone(line))   return false;
     if (containsWebsite(line)) return false;
     if (isAddressLine(line))   return false;
-    // Pure symbol/number lines
     if (/^[\d\s\-.()+#*,|\\\/]+$/.test(line)) return false;
-    // Lines that are just icons or very short noise
     if (line.replace(/[^a-zA-Z]/g,'').length < 2) return false;
     return true;
   });
@@ -928,7 +920,6 @@ function parseOCRText(rawText) {
     'construction','development','management','consultancy','ventures',
     'foundation','association','cooperative','institute','center',
     'distribution','supply','express','global','alliance','industrial',
-    // Known companies
     'seaborne','metaformation','toolbox','wwe cargo','ap cargo',
     'adelante','integrated','apcargo'
   ];
@@ -947,67 +938,112 @@ function parseOCRText(rawText) {
   ];
 
   // Helper: does a line look like a PERSON'S name?
-  // Pattern: 2–4 words, may include a single-letter initial (e.g. "D.")
-  // Exclude: anything that looks like a brand/logo abbreviation
   function looksLikeName(line) {
     const clean = line.replace(/[^A-Za-z.\s'-]/g,'').trim();
     const words = clean.split(/\s+/).filter(Boolean);
-    // Has middle initial like "D."
     const hasInitial = words.some(w => /^[A-Z]\.$/.test(w));
-    // 2–4 words, has at least one letter, not all one-char words
-    const rightLen = words.length >= 2 && words.length <= 4;
+    const rightLen = words.length >= 2 && words.length <= 5;
     const hasRealWord = words.some(w => w.replace(/\./g,'').length > 1);
     return rightLen && hasRealWord && (hasInitial || words.every(w => /^[A-Z]/.test(w) || /^[a-z]/.test(w)));
+  }
+
+  function hasCompanyKw(line) {
+    const lo = line.toLowerCase().replace(/[\\\/|*]/g,'');
+    return coKw.some(k => lo.includes(k));
+  }
+  function hasPosKw(line) {
+    return posKw.some(k => line.toLowerCase().includes(k));
   }
 
   const used = new Set();
   let company = '', position = '', name = '';
 
-  // FIND COMPANY — keyword match first
+  // FIND COMPANY — keyword match + expand to adjacent lines that are part of the same name
   cleanLines.forEach((line, i) => {
     if (company) return;
-    const lo = line.toLowerCase().replace(/[\\\/|*]/g,'');
-    if (coKw.some(k => lo.includes(k))) {
-      company = line.replace(/^[^A-Za-z]+/, '').trim(); // strip leading noise chars
-      used.add(i);
+    if (!hasCompanyKw(line)) return;
+
+    const parts = [{ idx: i, text: line }];
+    used.add(i);
+
+    // Expand backwards (up to 3 lines) — pick up preceding parts like "INTEGRATED" before "PACKAGING"
+    for (let j = i - 1; j >= Math.max(0, i - 3); j--) {
+      if (used.has(j)) break;
+      const prev = cleanLines[j];
+      if (looksLikeName(prev) || hasPosKw(prev) || prev.length > 50) break;
+      parts.unshift({ idx: j, text: prev });
+      used.add(j);
     }
+
+    // Expand forwards (up to 3 lines) — pick up trailing parts like "CORPORATION"
+    for (let j = i + 1; j <= Math.min(cleanLines.length - 1, i + 3); j++) {
+      if (used.has(j)) break;
+      const next = cleanLines[j];
+      if (looksLikeName(next) || hasPosKw(next) || next.length > 50) break;
+      parts.push({ idx: j, text: next });
+      used.add(j);
+    }
+
+    company = parts
+      .map(p => p.text.replace(/^[^A-Za-z]+/, '').trim())          // strip leading noise
+      .filter(p => p.replace(/[^A-Za-z]/g,'').length >= 2)          // drop pure-symbol remnants
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   });
 
-  // FIND COMPANY fallback — ALL CAPS line that is NOT a person's name
+  // FIND COMPANY fallback — ALL CAPS non-name line
   if (!company) {
     cleanLines.forEach((line, i) => {
       if (company || used.has(i)) return;
       const stripped = line.replace(/[^A-Za-z\s.&,-]/g,'').trim();
       const isAllCaps = stripped.length > 4 && stripped === stripped.toUpperCase();
-      const notName   = !looksLikeName(line);
-      if (isAllCaps && notName) {
+      if (isAllCaps && !looksLikeName(line)) {
         company = line.replace(/^[^A-Za-z]+/, '').trim();
         used.add(i);
       }
     });
   }
 
-  // FIND POSITION — keyword match
+  // FIND POSITION — keyword match, then clean trailing OCR noise
   cleanLines.forEach((line, i) => {
     if (position || used.has(i)) return;
-    const lo = line.toLowerCase();
-    if (posKw.some(k => lo.includes(k))) {
-      position = line.trim();
-      used.add(i);
+    if (!hasPosKw(line)) return;
+    let pos = line.trim();
+    // Strip trailing " . WORD WORD" OCR artifacts (e.g. ". NTE RATED")
+    pos = pos.replace(/\s*[.\-]\s*[A-Z]{2,}(\s+[A-Z]{2,})*\s*$/, '').trim();
+    // Strip trailing all-caps noise words that aren't position words
+    const posWords = pos.split(/\s+/);
+    while (posWords.length > 1) {
+      const last = posWords[posWords.length - 1];
+      if (/^[A-Z]{2,3}$/.test(last) && !posKw.some(k => last.toLowerCase() === k)) {
+        posWords.pop();
+      } else break;
     }
+    position = posWords.join(' ');
+    used.add(i);
   });
 
-  // FIND NAME — proper-case 2–4 word line
+  // FIND NAME — proper-case 2–5 word line, strip trailing OCR noise
   cleanLines.forEach((line, i) => {
     if (name || used.has(i)) return;
-    const clean = line.replace(/^[^A-Za-z]+/, '').trim(); // strip leading noise
+    const clean = line.replace(/^[^A-Za-z]+/, '').trim();
     const words = clean.split(/\s+/).filter(Boolean);
     const noSpecial = !/[@#$%^&*+=[\]{};:"\/]/.test(clean);
     const noNum     = clean.replace(/[A-Za-z.\s'-]/g,'').length < 3;
-    const rightLen  = words.length >= 2 && words.length <= 5;
+    const rightLen  = words.length >= 2 && words.length <= 6;
     const hasLetter = /[A-Za-z]{2,}/.test(clean);
-    if (rightLen && noSpecial && noNum && hasLetter && clean.length < 58) {
-      name = clean;
+    if (rightLen && noSpecial && noNum && hasLetter && clean.length < 60) {
+      // Strip trailing noise: remove short words (1–2 chars) that aren't initials
+      const nameWords = [...words];
+      while (nameWords.length > 2) {
+        const last = nameWords[nameWords.length - 1];
+        const isInitial = /^[A-Z]\.$/.test(last);
+        if (!isInitial && last.replace(/\./g,'').length <= 2) {
+          nameWords.pop();
+        } else break;
+      }
+      name = nameWords.join(' ');
       used.add(i);
     }
   });
@@ -1015,13 +1051,27 @@ function parseOCRText(rawText) {
   // ── 8. FORMAT PHONES ───────────────────────────────────
   function formatPH(num) {
     if (!num) return '';
-    const clean = num.replace(/\s+/g, ' ').trim();
-    // Mobile 09XX → +63 9XX XXX XXXX
-    const mob = clean.replace(/[\s.\-]/g,'');
-    if (/^09\d{9}$/.test(mob)) {
-      return '+63 ' + mob[1]+mob[2]+mob[3] + ' ' + mob[4]+mob[5]+mob[6] + ' ' + mob[7]+mob[8]+mob[9]+mob[10];
-    }
-    return clean;
+    // Strip "to XX" range / "ext XX" suffixes first
+    let cleaned = num.trim()
+      .replace(/[\s]*(to|ext|loc|x)\s*\d+\s*$/i, '')
+      .trim();
+    const d = cleaned.replace(/[^\d]/g, '');   // digits only
+
+    // Mobile: +639XXXXXXXXX (12 digits) or 09XXXXXXXXX (11 digits)
+    if (/^639\d{9}$/.test(d))
+      return '+63 ' + d.slice(3,6) + ' ' + d.slice(6,9) + ' ' + d.slice(9,13);
+    if (/^09\d{9}$/.test(d))
+      return '+63 ' + d.slice(1,4) + ' ' + d.slice(4,7) + ' ' + d.slice(7,11);
+
+    // Manila landline: +63 2 XXXX XXXX (11 digits: 632XXXXXXXX)
+    if (/^632\d{8}$/.test(d))
+      return '+63 2 ' + d.slice(3,7) + ' ' + d.slice(7,11);
+
+    // Other PH landlines: +63 XX XXXX XXXX (12 digits)
+    if (/^63\d{10}$/.test(d))
+      return '+63 ' + d.slice(2,4) + ' ' + d.slice(4,8) + ' ' + d.slice(8,12);
+
+    return cleaned;   // return cleaned (without "to XX") if no pattern matched
   }
 
   // ── 9. FORMAT WEBSITE ──────────────────────────────────
