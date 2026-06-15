@@ -799,7 +799,33 @@ async function runOCR() {
         }
       }
     });
-    const rawText = result.data.text;
+    // ── CONFIDENCE-FILTERED TEXT RECONSTRUCTION ──────────
+    // Tesseract scores each word 0-100. QR code noise / icon OCR artifacts
+    // score < 50. Real printed text typically scores 60-100.
+    // We rebuild the text using only high-confidence words, grouped by Y-position,
+    // to eliminate QR-code garbage, icon misreads, and background noise.
+    let rawText;
+    const wordData = result.data.words || [];
+    if (wordData.length >= 3) {
+      const goodWords = wordData.filter(w => w.confidence >= 55 && w.text.trim().length > 0);
+      if (goodWords.length >= 2) {
+        // Group words by approximate line (bucket Y-coordinates by 20px)
+        const lineMap = {};
+        goodWords.forEach(w => {
+          const lineKey = Math.round(w.bbox.y0 / 20) * 20;
+          if (!lineMap[lineKey]) lineMap[lineKey] = [];
+          lineMap[lineKey].push(w);
+        });
+        rawText = Object.keys(lineMap)
+          .sort((a, b) => parseInt(a) - parseInt(b))
+          .map(y => lineMap[y].sort((a, b) => a.bbox.x0 - b.bbox.x0).map(w => w.text).join(' '))
+          .join('\n');
+      } else {
+        rawText = result.data.text; // fallback if too few confident words
+      }
+    } else {
+      rawText = result.data.text;
+    }
     document.getElementById('ocrRaw').textContent   = rawText;
     document.getElementById('btnRaw').style.display = 'inline-flex';
 
@@ -942,7 +968,7 @@ function parseOCRText(rawText) {
   // Clean common OCR noise in addresses
   address = address.replace(/^[^A-Za-z0-9]+/, '').trim();                    // strip leading icon noise [Q] etc
   address = address.replace(/\[.*?\]/g, '').replace(/\s{2,}/g,' ').trim();   // remove [Q] [o] bracket noise
-  address = address.replace(/\bOO\b/g, '').replace(/\s{2,}/g,' ').trim();    // remove "OO" OCR artifact
+  address = address.replace(/\bO\s*O\b/gi, '').replace(/\s{2,}/g,' ').trim(); // remove "OO"/"O O" OCR artifact
   address = address.replace(/^[A-Z]{2,3}\s+(?=\d)/, '').trim();              // strip leading "DD "/"OO " before digit
   address = address.replace(/\s+\d\s*$/, '').trim();                          // remove trailing lone digit
 
@@ -968,7 +994,10 @@ function parseOCRText(rawText) {
     'foundation','association','cooperative','institute','center',
     'distribution','supply','express','global','alliance','industrial',
     'seaborne','metaformation','toolbox','wwe cargo','ap cargo',
-    'adelante','integrated','apcargo'
+    'adelante','integrated','apcargo',
+    // Stems — catch OCR dropping last 1-3 chars (e.g. "CORPORAT" for "CORPORATION")
+    'corporat','incorporat','distribut','manufactur','constructi',
+    'internation','associati','foundat','consultanc','cooperativ'
   ];
 
   const posKw = [
@@ -1127,11 +1156,12 @@ function parseOCRText(rawText) {
     if (rightLen && noSpecial && noNum && hasLetter && clean.length < 65) {
       let nameWords = [...words];
 
-      // Strip trailing noise: remove short words (1–2 chars) that aren't initials
+      // Strip trailing noise: remove short words (1–3 chars) that aren't initials
+      // e.g. "RAPISURA TED" → "TED" stripped; "TRINIDAD" intact (too long)
       while (nameWords.length > 2) {
         const last = nameWords[nameWords.length - 1];
         const isInitial = /^[A-Z]\.$/.test(last);
-        if (!isInitial && last.replace(/\./g,'').length <= 2) nameWords.pop();
+        if (!isInitial && last.replace(/\./g,'').length <= 3) nameWords.pop();
         else break;
       }
 
