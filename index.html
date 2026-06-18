@@ -327,7 +327,7 @@ a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
       </div>
       <div class="login-field">
         <label>Username</label>
-        <input type="text" id="newUser" placeholder="Letters, numbers, underscore" autocomplete="off"/>
+        <input type="text" id="newUser" placeholder="Choose a username" autocomplete="off"/>
       </div>
       <div class="login-field">
         <label>Password</label>
@@ -491,6 +491,12 @@ a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
       <button class="btn btn-primary" onclick="navigate('add')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
       </button>
+      <button class="btn btn-secondary" onclick="exportContacts()" title="Export to Excel / CSV">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
+      </button>
+      <button class="btn btn-secondary" onclick="exportVCard()" title="Export as vCard — save to phone contacts">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>vCard
+      </button>
     </div>
     <div class="section-card" id="tableView">
       <div class="table-wrap">
@@ -630,10 +636,7 @@ a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Company Name *</label>
-          <div style="display:flex;gap:6px;">
-            <input class="form-control auto-upper" id="add_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()" style="flex:1;"/>
-            <button class="btn btn-secondary btn-sm" onclick="lookupCompany('add')" title="Search company name online" style="white-space:nowrap;">🔍 Verify</button>
-          </div>
+          <input class="form-control auto-upper" id="add_company" placeholder="Company / Organization" oninput="this.value=this.value.toUpperCase()"/>
           <div id="add_co_suggestions" style="display:none;margin-top:6px;flex-wrap:wrap;gap:5px;"></div>
         </div>
         <div class="form-group"><label class="form-label">Full Name *</label><input class="form-control auto-upper" id="add_name" placeholder="First and Last Name" oninput="this.value=this.value.toUpperCase()"/></div>
@@ -1303,6 +1306,64 @@ async function submitDelete() {
 }
 
 // ── SEARCH ─────────────────────────────────────────────
+// ── EXPORT CSV ─────────────────────────────────────────
+function exportContacts() {
+  const data = filtered.length ? filtered : allContacts;
+  if (!data.length) { toast('No contacts to export.', 'error'); return; }
+  const COLS = ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE','ADDRESS','NOTES'];
+  const escape = v => {
+    const s = (v || '').toString().replace(/"/g, '""');
+    return /[,"\n]/.test(s) ? `"${s}"` : s;
+  };
+  const rows = [COLS.map(escape).join(',')];
+  data.forEach(c => rows.push(COLS.map(k => escape(c[k] || '')).join(',')));
+  const csv   = rows.join('\r\n');
+  const blob  = new Blob(['﻿' + csv, ''], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+  const url   = URL.createObjectURL(blob);
+  const link  = document.createElement('a');
+  const date  = new Date().toISOString().slice(0,10);
+  link.href     = url;
+  link.download = `RTC_Contacts_${currentUser}_${date}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+  toast(`Exported ${data.length} contacts as CSV`, 'success');
+}
+
+// ── EXPORT VCARD (.vcf) ────────────────────────────────
+function exportVCard() {
+  const data = filtered.length ? filtered : allContacts;
+  if (!data.length) { toast('No contacts to export.', 'error'); return; }
+  const ve = v => (v||'').toString()
+    .replace(/\\/g,'\\\\').replace(/,/g,'\\,')
+    .replace(/;/g,'\\;').replace(/\n/g,'\\n');
+  const cards = data.map(c => {
+    const lines = ['BEGIN:VCARD','VERSION:3.0'];
+    const name    = c['NAME']    || '';
+    const company = c['COMPANY'] || '';
+    lines.push('FN:'    + ve(name || company));
+    lines.push('N:'     + ve(name) + ';;;;');
+    if (company)            lines.push('ORG:'           + ve(company));
+    if (c['POSITION'])      lines.push('TITLE:'         + ve(c['POSITION']));
+    if (c['CONTACT#1'])     lines.push('TEL;TYPE=CELL:' + ve(c['CONTACT#1']));
+    if (c['CONTACT#2'])     lines.push('TEL;TYPE=WORK:' + ve(c['CONTACT#2']));
+    if (c['EMAIL ADDRESS']) lines.push('EMAIL:'         + ve(c['EMAIL ADDRESS']));
+    if (c['WEBSITE'])       lines.push('URL:'           + fixUrl(c['WEBSITE']));
+    if (c['ADDRESS'])       lines.push('ADR;TYPE=WORK:;;' + ve(c['ADDRESS']) + ';;;;');
+    if (c['NOTES'])         lines.push('NOTE:'          + ve(c['NOTES']));
+    lines.push('END:VCARD');
+    return lines.join('\r\n');
+  });
+  const blob = new Blob([cards.join('\r\n')], { type: 'text/vcard;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  link.href     = url;
+  link.download = `RTC_Contacts_${currentUser}_${date}.vcf`;
+  link.click();
+  URL.revokeObjectURL(url);
+  toast(`Exported ${data.length} contacts as vCard (.vcf)`, 'success');
+}
+
 function doSearch() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   filtered = !q ? [...allContacts] : allContacts.filter(c =>
