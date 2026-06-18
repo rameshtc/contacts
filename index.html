@@ -176,6 +176,98 @@ textarea.form-control{resize:vertical;min-height:72px;}
 /* Auto uppercase inputs */
 .auto-upper{text-transform:uppercase;}
 .auto-upper::placeholder{text-transform:none;}
+
+/* ── DARK MODE ─────────────────────────────────────────── */
+[data-theme="dark"]{
+  --gray-100:#1a1b2e;--gray-200:#2d2f45;--gray-400:#6b7280;
+  --gray-600:#a0aec0;--gray-700:#b8c0d0;--gray-800:#e2e8f0;
+  --maroon-bg:#2d1020;--green:#34d399;--red:#f87171;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="dark"] body,[data-theme="dark"]{background:#0f1117;color:var(--gray-800);}
+[data-theme="dark"] .section-card,[data-theme="dark"] .modal,[data-theme="dark"] .login-box,
+[data-theme="dark"] .contact-card,[data-theme="dark"] .stat-card{background:#1e1f2e;border-color:var(--gray-200);}
+[data-theme="dark"] .sidebar{background:#151621;border-color:var(--gray-200);}
+[data-theme="dark"] .form-control,[data-theme="dark"] .search-input{background:#252636;border-color:var(--gray-200);color:var(--gray-800);}
+[data-theme="dark"] .toggle-wrap,[data-theme="dark"] .toggle-wrap button{background:#252636;color:var(--gray-600);}
+[data-theme="dark"] .toggle-wrap button.active{background:var(--maroon);color:#fff;}
+[data-theme="dark"] td,[data-theme="dark"] th{border-color:var(--gray-200);}
+[data-theme="dark"] tr:hover td{background:var(--maroon-bg);}
+[data-theme="dark"] .btn-secondary{background:#252636;border-color:var(--gray-200);color:var(--gray-600);}
+[data-theme="dark"] .btn-secondary:hover{background:#313244;}
+[data-theme="dark"] .ocr-raw{background:#252636;}
+[data-theme="dark"] .rtable td,[data-theme="dark"] .rtable th{border-color:var(--gray-200);}
+[data-theme="dark"] .divider{background:var(--gray-200);}
+[data-theme="dark"] .loading-overlay{background:rgba(15,17,23,.75);}
+[data-theme="dark"] .loading-box{background:#1e1f2e;}
+[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,.65);}
+[data-theme="dark"] .card-actions{border-color:var(--gray-200);}
+[data-theme="dark"] .login-field input{background:#252636;border-color:var(--gray-200);color:var(--gray-800);}
+[data-theme="dark"] .login-error{background:#2d1a1a;color:#f87171;}
+
+/* ── MOBILE BOTTOM NAV ─────────────────────────────────── */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--maroon);z-index:200;border-top:1px solid rgba(255,255,255,.15);}
+.mobile-bottom-nav .mnav-items{display:flex;height:100%;}
+.mnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:rgba(255,255,255,.65);cursor:pointer;font-size:.6rem;font-weight:600;transition:color .2s;padding:0;}
+.mnav-btn.active,.mnav-btn:hover{color:#fff;}
+.mnav-btn svg{width:20px;height:20px;}
+/* scan button special */
+.mnav-btn.scan-btn{background:rgba(255,255,255,.15);border-radius:12px;margin:8px 4px;color:#fff;}
+
+@media(max-width:768px){
+  .mobile-bottom-nav{display:block;}
+  .main{padding:16px 14px 80px;}
+  .sidebar{transform:translateX(-100%);z-index:150;}
+  .sidebar.open{transform:translateX(0);}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .capture-layout{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr!important;}
+  .full-col{grid-column:1/-1;}
+  .toolbar{gap:8px;}
+  .page-title{font-size:1.15rem;}
+  .section-card{padding:16px;}
+  .login-box{padding:32px 22px;margin:0 12px;}
+  .modal{padding:20px;margin:8px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .toast-wrap{bottom:72px;right:12px;left:12px;}
+  .toast{max-width:100%;}
+  table{font-size:.75rem;}
+  th,td{padding:7px 8px;}
+  /* hide sync label on mobile */
+  .sync-status{display:none;}
+  .header-title{font-size:.88rem;}
+}
+
+/* ── LOGIN TABS (sign in / create account) ─────────────── */
+.login-tabs{display:flex;border-bottom:2px solid var(--gray-200);margin-bottom:24px;}
+.login-tab{flex:1;padding:10px;text-align:center;font-size:.85rem;font-weight:700;color:var(--gray-400);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s;}
+.login-tab.active{color:var(--maroon);border-bottom-color:var(--maroon);}
+.login-link{background:none;border:none;color:var(--maroon);font-size:.78rem;cursor:pointer;text-decoration:underline;display:block;text-align:center;margin-top:10px;}
+.login-info{background:#EFF6FF;color:#1D4ED8;border-radius:8px;padding:12px 14px;font-size:.8rem;margin-top:12px;display:none;line-height:1.5;}
+[data-theme="dark"] .login-info{background:#1a2540;color:#93c5fd;}
+
+/* ── SHOW/HIDE PASSWORD ─────────────────────────────── */
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:40px!important;}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px;display:flex;align-items:center;line-height:1;}
+.pw-eye:hover{color:var(--gray-700);}
+[data-theme="dark"] .pw-eye:hover{color:var(--gray-600);}
+
+/* ── QUICK ACTION LINKS ─────────────────────────────── */
+a.qa-link{color:inherit;text-decoration:none;}
+a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
+.qa-icon-btn{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:.72rem;font-weight:600;text-decoration:none;border:1px solid transparent;transition:.15s;}
+.qa-icon-btn.qa-call{color:#16a34a;background:#f0fdf4;border-color:#bbf7d0;}
+.qa-icon-btn.qa-mail{color:#1d4ed8;background:#eff6ff;border-color:#bfdbfe;}
+.qa-icon-btn:hover{opacity:.8;}
+[data-theme="dark"] .qa-icon-btn.qa-call{background:#052e16;border-color:#166534;}
+[data-theme="dark"] .qa-icon-btn.qa-mail{background:#1e1a3a;border-color:#1d4ed8;}
+.card-qa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+/* ── NOTES FIELD ────────────────────────────────────── */
+.notes-cell{font-size:.72rem;color:var(--gray-400);font-style:italic;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-notes{font-size:.75rem;color:var(--gray-400);font-style:italic;margin-top:6px;border-top:1px solid var(--gray-200);padding-top:6px;}
 </style>
 </head>
 <body>
@@ -187,16 +279,69 @@ textarea.form-control{resize:vertical;min-height:72px;}
       <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
     </div>
     <div class="login-title">RTC Contact System</div>
-    <div class="login-sub">Sign in to access your contacts</div>
-    <div class="login-field">
-      <label>Username</label>
-      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+
+    <!-- Tabs -->
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabSignIn" onclick="switchLoginTab('signin')">Sign In</button>
+      <button class="login-tab" id="tabCreate" onclick="switchLoginTab('create')">Create Account</button>
     </div>
-    <div class="login-field">
-      <label>Password</label>
-      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+
+    <!-- Sign In Form -->
+    <div id="formSignIn">
+      <div class="login-sub" style="margin-bottom:16px;">Sign in to access your contacts</div>
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button type="button" class="pw-eye" onclick="togglePwEye('loginPass',this)" tabindex="-1">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <button class="login-link" onclick="showForgotMsg()">Forgot password?</button>
+      <div class="login-info" id="forgotMsg">
+        🔒 Please check your username and password and try again.<br>
+        If you still can't access your account, contact <strong>Isaac</strong> via <strong>Wave</strong> or the <strong>EA Department</strong>.
+      </div>
     </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+
+    <!-- Create Account Form -->
+    <div id="formCreate" style="display:none;">
+      <div class="login-sub" style="margin-bottom:16px;">Create a new account</div>
+      <div class="login-field">
+        <label>Full Name</label>
+        <input type="text" id="newFullName" placeholder="Your full name" autocomplete="name"/>
+      </div>
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="newUser" placeholder="Letters, numbers, underscore" autocomplete="off"/>
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="newPass" placeholder="At least 4 characters" autocomplete="new-password"/>
+          <button type="button" class="pw-eye" onclick="togglePwEye('newPass',this)" tabindex="-1">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="login-field">
+        <label>Confirm Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="newPass2" placeholder="Repeat password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doCreateAccount()"/>
+          <button type="button" class="pw-eye" onclick="togglePwEye('newPass2',this)" tabindex="-1">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="login-btn" id="createBtn" onclick="doCreateAccount()">Create Account</button>
+    </div>
+
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -222,8 +367,12 @@ textarea.form-control{resize:vertical;min-height:72px;}
     <button class="btn-icon" onclick="loadContacts(true)" title="Sync">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
     </button>
-    <button class="btn-icon" onclick="navigate('settings')" title="Settings">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <!-- Dark mode toggle -->
+    <button class="btn-icon" id="darkToggleBtn" onclick="toggleDarkMode()" title="Toggle dark mode">
+      <!-- Sun icon (shown in dark mode) -->
+      <svg id="iconSun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <!-- Moon icon (shown in light mode) -->
+      <svg id="iconMoon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
     <button class="btn-icon" onclick="doLogout()" title="Logout">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -253,6 +402,32 @@ textarea.form-control{resize:vertical;min-height:72px;}
   <button class="nav-item" id="nav-profile" onclick="navigate('profile')">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile
   </button>
+</nav>
+
+<!-- ── MOBILE BOTTOM NAVIGATION ─────────────────────── -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <div class="mnav-items">
+    <button class="mnav-btn active" id="mnav-dashboard" onclick="navigate('dashboard')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Home
+    </button>
+    <button class="mnav-btn" id="mnav-contacts" onclick="navigate('contacts')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Contacts
+    </button>
+    <button class="mnav-btn scan-btn" id="mnav-capture" onclick="navigate('capture')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Scan
+    </button>
+    <button class="mnav-btn" id="mnav-add" onclick="navigate('add')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add
+    </button>
+    <button class="mnav-btn" id="mnav-profile" onclick="navigate('profile')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+  </div>
 </nav>
 
 <main class="main">
@@ -308,7 +483,7 @@ textarea.form-control{resize:vertical;min-height:72px;}
           <thead><tr>
             <th>Company</th><th>Name</th><th>Position</th>
             <th>Tel / Mobile</th><th>Contact #2</th>
-            <th>Email</th><th>Website</th><th>Address</th><th>Actions</th>
+            <th>Email</th><th>Website</th><th>Address</th><th>Notes</th><th>Actions</th>
           </tr></thead>
           <tbody id="contactsTableBody"></tbody>
         </table>
@@ -418,6 +593,7 @@ textarea.form-control{resize:vertical;min-height:72px;}
           <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="ocr_email" type="text" placeholder="email@domain.com"/></div>
           <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="ocr_website" placeholder="https://www.company.com"/></div>
           <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="ocr_address" placeholder="Street, Barangay, City, Province" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
+          <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Notes</label><textarea class="form-control" id="ocr_notes" placeholder="Internal remarks…" rows="2"></textarea></div>
         </div>
         <div class="form-actions" style="margin-top:14px;">
           <button class="btn btn-primary" onclick="saveOCRContact()">
@@ -456,6 +632,7 @@ textarea.form-control{resize:vertical;min-height:72px;}
         <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="add_email" type="email" placeholder="email@domain.com"/></div>
         <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="add_website" placeholder="https://www.company.com"/></div>
         <div class="form-group full-col"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="add_address" placeholder="Street, Barangay, City, Province" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
+        <div class="form-group full-col"><label class="form-label">Notes <span style="font-weight:400;color:var(--gray-400);">(internal remarks)</span></label><textarea class="form-control" id="add_notes" placeholder="e.g. Met at DICT event, follow up Q3…" rows="2"></textarea></div>
       </div>
       <div class="divider"></div>
       <div class="form-actions">
@@ -514,6 +691,47 @@ textarea.form-control{resize:vertical;min-height:72px;}
         </button>
       </div>
     </div>
+
+    <!-- Change Password -->
+    <div class="section-card" style="max-width:540px;margin-top:20px;">
+      <div class="section-title" style="margin-bottom:16px;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Change Password
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="chgpw_current" placeholder="Enter current password"/>
+            <button type="button" class="pw-eye" onclick="togglePwEye('chgpw_current',this)" tabindex="-1">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="chgpw_new" placeholder="New password (min 4 chars)"/>
+            <button type="button" class="pw-eye" onclick="togglePwEye('chgpw_new',this)" tabindex="-1">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="chgpw_confirm" placeholder="Repeat new password"/>
+            <button type="button" class="pw-eye" onclick="togglePwEye('chgpw_confirm',this)" tabindex="-1">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="changePassword()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Update Password
+        </button>
+      </div>
+    </div>
   </div>
   <!-- hidden for settings URL reference -->
   <span id="currentScriptUrl" style="display:none;"></span>
@@ -540,6 +758,7 @@ textarea.form-control{resize:vertical;min-height:72px;}
       <div class="form-group"><label class="form-label">Email Address</label><input class="form-control" id="edit_email" type="email"/></div>
       <div class="form-group"><label class="form-label">Website</label><input class="form-control" id="edit_website" placeholder="https://www.company.com"/></div>
       <div class="form-group full-col"><label class="form-label">Address</label><textarea class="form-control auto-upper" id="edit_address" rows="2" oninput="this.value=this.value.toUpperCase()"></textarea></div>
+      <div class="form-group full-col"><label class="form-label">Notes <span style="font-weight:400;color:var(--gray-400);">(internal)</span></label><textarea class="form-control" id="edit_notes" rows="2" placeholder="Internal remarks…"></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
@@ -579,6 +798,90 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza-2VH4965YMel2PPIB
 // ── SESSION ─────────────────────────────────────────────
 let currentUser      = null;
 let currentSheetName = null;
+
+// ── SHOW / HIDE PASSWORD ────────────────────────────────
+function togglePwEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.innerHTML = show
+    ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+}
+
+// ── DARK MODE ───────────────────────────────────────────
+function initDarkMode() {
+  const saved = localStorage.getItem('rtc_dark_mode');
+  if (saved === 'dark') applyDarkMode(true);
+}
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  applyDarkMode(!isDark);
+}
+function applyDarkMode(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  localStorage.setItem('rtc_dark_mode', dark ? 'dark' : 'light');
+  document.getElementById('iconSun').style.display  = dark ? 'block' : 'none';
+  document.getElementById('iconMoon').style.display = dark ? 'none'  : 'block';
+}
+initDarkMode();
+
+// ── LOGIN TABS ──────────────────────────────────────────
+function switchLoginTab(tab) {
+  const isSignIn = tab === 'signin';
+  document.getElementById('formSignIn').style.display = isSignIn ? '' : 'none';
+  document.getElementById('formCreate').style.display = isSignIn ? 'none' : '';
+  document.getElementById('tabSignIn').classList.toggle('active', isSignIn);
+  document.getElementById('tabCreate').classList.toggle('active', !isSignIn);
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('forgotMsg').style.display = 'none';
+}
+function showForgotMsg() {
+  const el = document.getElementById('forgotMsg');
+  el.style.display = el.style.display === 'none' || el.style.display === '' ? 'block' : 'none';
+}
+
+// ── CREATE ACCOUNT ──────────────────────────────────────
+async function doCreateAccount() {
+  const fullName = (document.getElementById('newFullName').value || '').trim();
+  const username = (document.getElementById('newUser').value  || '').trim().toLowerCase();
+  const password = (document.getElementById('newPass').value  || '').trim();
+  const confirm  = (document.getElementById('newPass2').value || '').trim();
+  const errEl    = document.getElementById('loginError');
+  const btn      = document.getElementById('createBtn');
+  errEl.style.display = 'none';
+  if (!username || !password) {
+    errEl.textContent = 'Please fill in username and password.'; errEl.style.display = 'block'; return;
+  }
+  if (password !== confirm) {
+    errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return;
+  }
+  if (password.length < 4) {
+    errEl.textContent = 'Password must be at least 4 characters.'; errEl.style.display = 'block'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try {
+    const res  = await fetch(SCRIPT_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'create_account', username, password, fullName })
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to create account');
+    switchLoginTab('signin');
+    document.getElementById('loginUser').value = username;
+    document.getElementById('loginPass').value = '';
+    document.getElementById('newFullName').value = '';
+    document.getElementById('newUser').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('newPass2').value = '';
+    errEl.style.cssText = 'display:block;background:#d1fae5;color:#065f46;border-color:#6ee7b7;';
+    errEl.textContent = '✓ Account created! You can now sign in.';
+  } catch (err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
 
 // ── LOGIN / LOGOUT ──────────────────────────────────────
 async function doLogin() {
@@ -712,6 +1015,29 @@ async function saveProfile() {
   finally { hideLoading(); }
 }
 
+async function changePassword() {
+  const currentPw = (document.getElementById('chgpw_current').value || '').trim();
+  const newPw     = (document.getElementById('chgpw_new').value     || '').trim();
+  const confirmPw = (document.getElementById('chgpw_confirm').value || '').trim();
+  if (!currentPw || !newPw || !confirmPw) { toast('Please fill in all password fields.', 'error'); return; }
+  if (newPw !== confirmPw)                { toast('New passwords do not match.', 'error'); return; }
+  if (newPw.length < 4)                  { toast('Password must be at least 4 characters.', 'error'); return; }
+  showLoading('Updating password…');
+  try {
+    const res  = await fetch(SCRIPT_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'change_password', username: currentUser, currentPassword: currentPw, newPassword: newPw })
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    document.getElementById('chgpw_current').value = '';
+    document.getElementById('chgpw_new').value     = '';
+    document.getElementById('chgpw_confirm').value = '';
+    toast('Password updated successfully!', 'success');
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
 function doLogout() {
   currentUser = null; currentSheetName = null; currentProfile = {};
   allContacts = []; filtered = [];
@@ -817,9 +1143,12 @@ window.addEventListener('DOMContentLoaded', () => {
 function navigate(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mnav-btn').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + view).classList.add('active');
   const nav = document.getElementById('nav-' + view);
   if (nav) nav.classList.add('active');
+  const mnav = document.getElementById('mnav-' + view);
+  if (mnav) mnav.classList.add('active');
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlayBg').classList.remove('open');
 }
@@ -870,6 +1199,17 @@ async function postData(payload) {
 async function submitAdd() {
   const data = gatherForm('add');
   if (!data['COMPANY'] && !data['NAME']) { toast('Company or Name is required', 'error'); return; }
+  // ── Duplicate detection ──
+  if (data['NAME'] || data['CONTACT#1']) {
+    const dup = allContacts.find(c =>
+      (data['NAME'] && c['NAME'] && c['NAME'].toUpperCase() === data['NAME'].toUpperCase()) ||
+      (data['CONTACT#1'] && c['CONTACT#1'] && c['CONTACT#1'].replace(/\s/g,'') === data['CONTACT#1'].replace(/\s/g,''))
+    );
+    if (dup) {
+      const label = dup['NAME'] || dup['COMPANY'] || 'an existing contact';
+      if (!confirm(`⚠️ Possible duplicate detected!\n"${label}" matches an existing contact.\n\nSave anyway?`)) return;
+    }
+  }
   showLoading('Saving contact…');
   try {
     const r = await postData({ action: 'add', data });
@@ -910,6 +1250,7 @@ function openEditModal(contact) {
   document.getElementById('edit_email').value    = contact['EMAIL ADDRESS'] || '';
   document.getElementById('edit_website').value  = contact['WEBSITE']       || '';
   document.getElementById('edit_address').value  = up(contact['ADDRESS']);
+  document.getElementById('edit_notes').value    = contact['NOTES']         || '';
   openModal('editModal');
 }
 async function submitEdit() {
@@ -950,7 +1291,7 @@ async function submitDelete() {
 function doSearch() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   filtered = !q ? [...allContacts] : allContacts.filter(c =>
-    ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE','ADDRESS']
+    ['COMPANY','NAME','POSITION','CONTACT#1','CONTACT#2','EMAIL ADDRESS','WEBSITE','ADDRESS','NOTES']
       .some(k => (c[k]||'').toLowerCase().includes(q))
   );
   renderContactsList();
@@ -988,19 +1329,23 @@ function setContactView(vw) {
 
 function renderTable() {
   const tb = document.getElementById('contactsTableBody');
-  if (!filtered.length) { tb.innerHTML='<tr class="empty-row"><td colspan="9">No contacts found.</td></tr>'; return; }
+  if (!filtered.length) { tb.innerHTML='<tr class="empty-row"><td colspan="10">No contacts found.</td></tr>'; return; }
   tb.innerHTML = filtered.map(c => {
     const idx = allContacts.indexOf(c);
+    const ph1 = c['CONTACT#1'] ? `<a class="qa-link" href="tel:${esc(c['CONTACT#1'].replace(/\s/g,''))}">${esc(c['CONTACT#1'])}</a>` : '';
+    const ph2 = c['CONTACT#2'] ? `<a class="qa-link" href="tel:${esc(c['CONTACT#2'].replace(/\s/g,''))}">${esc(c['CONTACT#2'])}</a>` : '';
     const web = c['WEBSITE'] ? `<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a>` : '';
+    const mail = c['EMAIL ADDRESS'] ? `<a class="qa-link" href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>` : '';
     return `<tr>
       <td class="c-co">${esc(c['COMPANY'])}</td>
       <td>${esc(c['NAME'])}</td>
       <td class="c-pos">${esc(c['POSITION'])}</td>
-      <td class="c-ph">${esc(c['CONTACT#1'])}</td>
-      <td class="c-ph">${esc(c['CONTACT#2'])}</td>
-      <td class="c-lnk">${c['EMAIL ADDRESS']?`<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>`:''}</td>
+      <td class="c-ph">${ph1}</td>
+      <td class="c-ph">${ph2}</td>
+      <td class="c-lnk">${mail}</td>
       <td class="c-lnk">${web}</td>
       <td class="c-addr">${esc(c['ADDRESS'])}</td>
+      <td class="notes-cell" title="${esc(c['NOTES']||'')}">${esc(c['NOTES']||'')}</td>
       <td><div class="action-btns">
         <button class="btn-edit" onclick="openEditModal(allContacts[${idx}])">Edit</button>
         <button class="btn-del"  onclick="openDeleteModal(allContacts[${idx}])">Del</button>
@@ -1022,12 +1367,17 @@ function renderCards() {
       </div>
       <div class="card-co">${icoBuilding()} ${esc(c['COMPANY']||'—')}</div>
       <div class="card-info">
-        ${c['CONTACT#1']?`<div class="card-row">${icoPhone()}${esc(c['CONTACT#1'])}</div>`:''}
-        ${c['CONTACT#2']?`<div class="card-row">${icoPhone()}${esc(c['CONTACT#2'])}</div>`:''}
-        ${c['EMAIL ADDRESS']?`<div class="card-row">${icoEmail()}<a href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
+        ${c['CONTACT#1']?`<div class="card-row">${icoPhone()}<a class="qa-link" href="tel:${esc(c['CONTACT#1'].replace(/\s/g,''))}">${esc(c['CONTACT#1'])}</a></div>`:''}
+        ${c['CONTACT#2']?`<div class="card-row">${icoPhone()}<a class="qa-link" href="tel:${esc(c['CONTACT#2'].replace(/\s/g,''))}">${esc(c['CONTACT#2'])}</a></div>`:''}
+        ${c['EMAIL ADDRESS']?`<div class="card-row">${icoEmail()}<a class="qa-link" href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
         ${c['WEBSITE']?`<div class="card-row">${icoWeb()}<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a></div>`:''}
         ${c['ADDRESS']?`<div class="card-row">${icoPin()}${esc(c['ADDRESS'])}</div>`:''}
       </div>
+      ${(c['CONTACT#1']||c['EMAIL ADDRESS'])?`<div class="card-qa">
+        ${c['CONTACT#1']?`<a class="qa-icon-btn qa-call" href="tel:${esc(c['CONTACT#1'].replace(/\s/g,''))}">📞 Call</a>`:''}
+        ${c['EMAIL ADDRESS']?`<a class="qa-icon-btn qa-mail" href="mailto:${esc(c['EMAIL ADDRESS'])}">✉ Email</a>`:''}
+      </div>`:''}
+      ${c['NOTES']?`<div class="card-notes">📝 ${esc(c['NOTES'])}</div>`:''}
       <div class="card-actions">
         <button class="btn btn-outline btn-sm" style="flex:1" onclick="openEditModal(allContacts[${idx}])">Edit</button>
         <button class="btn btn-sm" style="flex:1;background:#FEF2F2;color:var(--red);border:none;" onclick="openDeleteModal(allContacts[${idx}])">Delete</button>
@@ -1836,24 +2186,26 @@ function parseOCRText(rawText, fullText) {
 // ── FORM HELPERS ────────────────────────────────────────
 function gatherForm(prefix) {
   const up = s => (s||'').toUpperCase();
+  const gv = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   return {
-    'COMPANY':       up(v(prefix+'_company')),
-    'NAME':          up(v(prefix+'_name')),
-    'POSITION':      up(v(prefix+'_position')),
-    'CONTACT#1':     v(prefix+'_contact1'),      // keep original formatting
-    'CONTACT#2':     v(prefix+'_contact2'),
-    'EMAIL ADDRESS': v(prefix+'_email'),
-    'WEBSITE':       v(prefix+'_website'),
-    'ADDRESS':       up((document.getElementById(prefix+'_address')||{value:''}).value.trim())
+    'COMPANY':       up(gv(prefix+'_company')),
+    'NAME':          up(gv(prefix+'_name')),
+    'POSITION':      up(gv(prefix+'_position')),
+    'CONTACT#1':     gv(prefix+'_contact1'),
+    'CONTACT#2':     gv(prefix+'_contact2'),
+    'EMAIL ADDRESS': gv(prefix+'_email'),
+    'WEBSITE':       gv(prefix+'_website'),
+    'ADDRESS':       up(gv(prefix+'_address')),
+    'NOTES':         gv(prefix+'_notes')
   };
 }
 function clearAddForm() {
-  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email','add_website','add_address']
-    .forEach(id => document.getElementById(id).value = '');
+  ['add_company','add_name','add_position','add_contact1','add_contact2','add_email','add_website','add_address','add_notes']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
 }
 function clearOCRForm() {
-  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email','ocr_website','ocr_address']
-    .forEach(id => document.getElementById(id).value = '');
+  ['ocr_company','ocr_name','ocr_position','ocr_contact1','ocr_contact2','ocr_email','ocr_website','ocr_address','ocr_notes']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
 }
 
 // ── MODALS ─────────────────────────────────────────────
