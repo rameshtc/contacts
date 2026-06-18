@@ -1312,7 +1312,7 @@ function renderDashboard() {
         <td>${esc(c['NAME'])}</td>
         <td style="color:var(--gray-400);font-size:.79rem;">${esc(c['POSITION'])}</td>
         <td style="font-family:monospace;font-size:.79rem;">${esc(c['CONTACT#1'])}</td>
-        <td><a href="mailto:${esc(c['EMAIL ADDRESS'])}" style="color:var(--maroon);font-size:.79rem;">${esc(c['EMAIL ADDRESS'])}</a></td>
+        <td><a href="mailto:${esc(c['EMAIL ADDRESS'])}" class="qa-link" style="font-size:.79rem;">${esc(c['EMAIL ADDRESS'])}</a></td>
       </tr>`).join('');
 }
 
@@ -1327,6 +1327,7 @@ function setContactView(vw) {
   document.getElementById('btnCards').classList.toggle('active', vw==='cards');
 }
 
+function fixUrl(u) { return u && !/^https?:\/\//i.test(u) ? 'https://' + u : u; }
 function renderTable() {
   const tb = document.getElementById('contactsTableBody');
   if (!filtered.length) { tb.innerHTML='<tr class="empty-row"><td colspan="10">No contacts found.</td></tr>'; return; }
@@ -1334,7 +1335,7 @@ function renderTable() {
     const idx = allContacts.indexOf(c);
     const ph1 = c['CONTACT#1'] ? `<a class="qa-link" href="tel:${esc(c['CONTACT#1'].replace(/\s/g,''))}">${esc(c['CONTACT#1'])}</a>` : '';
     const ph2 = c['CONTACT#2'] ? `<a class="qa-link" href="tel:${esc(c['CONTACT#2'].replace(/\s/g,''))}">${esc(c['CONTACT#2'])}</a>` : '';
-    const web = c['WEBSITE'] ? `<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a>` : '';
+    const web = c['WEBSITE'] ? `<a href="${esc(fixUrl(c['WEBSITE']))}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//i,''))}</a>` : '';
     const mail = c['EMAIL ADDRESS'] ? `<a class="qa-link" href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a>` : '';
     return `<tr>
       <td class="c-co">${esc(c['COMPANY'])}</td>
@@ -1370,7 +1371,7 @@ function renderCards() {
         ${c['CONTACT#1']?`<div class="card-row">${icoPhone()}<a class="qa-link" href="tel:${esc(c['CONTACT#1'].replace(/\s/g,''))}">${esc(c['CONTACT#1'])}</a></div>`:''}
         ${c['CONTACT#2']?`<div class="card-row">${icoPhone()}<a class="qa-link" href="tel:${esc(c['CONTACT#2'].replace(/\s/g,''))}">${esc(c['CONTACT#2'])}</a></div>`:''}
         ${c['EMAIL ADDRESS']?`<div class="card-row">${icoEmail()}<a class="qa-link" href="mailto:${esc(c['EMAIL ADDRESS'])}">${esc(c['EMAIL ADDRESS'])}</a></div>`:''}
-        ${c['WEBSITE']?`<div class="card-row">${icoWeb()}<a href="${esc(c['WEBSITE'])}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//,''))}</a></div>`:''}
+        ${c['WEBSITE']?`<div class="card-row">${icoWeb()}<a href="${esc(fixUrl(c['WEBSITE']))}" target="_blank" rel="noopener">${esc(c['WEBSITE'].replace(/^https?:\/\//i,''))}</a></div>`:''}
         ${c['ADDRESS']?`<div class="card-row">${icoPin()}${esc(c['ADDRESS'])}</div>`:''}
       </div>
       ${(c['CONTACT#1']||c['EMAIL ADDRESS'])?`<div class="card-qa">
