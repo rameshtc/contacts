@@ -141,6 +141,10 @@ textarea.form-control{resize:vertical;min-height:72px;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
 .modal{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mIn .2s ease;}
+.vcard-row{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;border:1.5px solid transparent;}
+.vcard-row:hover{background:var(--maroon-bg);}
+.vcard-row.vcard-checked{background:var(--maroon-bg);border-color:rgba(128,0,32,.2);}
+.vcard-row input[type="checkbox"]{flex-shrink:0;margin-top:3px;width:15px;height:15px;accent-color:var(--maroon);cursor:pointer;}
 @keyframes mIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
 .modal-title{font-size:1.05rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-200);}
@@ -494,7 +498,7 @@ a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
       <button class="btn btn-secondary" onclick="exportContacts()" title="Export to Excel / CSV">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV
       </button>
-      <button class="btn btn-secondary" onclick="exportVCard()" title="Export as vCard — save to phone contacts">
+      <button class="btn btn-secondary" onclick="openVCardModal()" title="Export as vCard — save to phone contacts">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>vCard
       </button>
     </div>
@@ -798,6 +802,40 @@ a.qa-link:hover{color:var(--maroon);text-decoration:underline;}
     <div class="modal-footer" style="justify-content:center;">
       <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
       <button class="btn btn-danger" onclick="submitDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VCARD EXPORT MODAL ──────────────────────────────── -->
+<div class="modal-overlay" id="vcardModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Export vCard
+      <span id="vcardSelCount" style="margin-left:auto;font-size:.8rem;font-weight:500;color:var(--gray-400);"></span>
+    </div>
+
+    <!-- select all row -->
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:2px solid var(--gray-200);margin-bottom:6px;">
+      <input type="checkbox" id="vcardSelectAll" style="width:16px;height:16px;accent-color:var(--maroon);cursor:pointer;" onchange="vcardToggleAll(this.checked)"/>
+      <label for="vcardSelectAll" style="font-size:.82rem;font-weight:700;cursor:pointer;color:var(--gray-600);">Select All</label>
+      <!-- mini search -->
+      <div style="position:relative;margin-left:auto;flex:0 0 auto;">
+        <svg width="13" height="13" fill="none" stroke="var(--gray-400)" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="vcardSearch" type="text" placeholder="Filter…" oninput="vcardFilter(this.value)"
+          style="padding:5px 8px 5px 26px;border:1.5px solid var(--gray-200);border-radius:7px;font-size:.78rem;outline:none;width:130px;"/>
+      </div>
+    </div>
+
+    <!-- contact list -->
+    <div id="vcardList" style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('vcardModal')">Cancel</button>
+      <button class="btn btn-primary" id="vcardExportBtn" onclick="doExportVCard()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export Selected (<span id="vcardExportCount">0</span>)
+      </button>
     </div>
   </div>
 </div>
@@ -1330,9 +1368,74 @@ function exportContacts() {
 }
 
 // ── EXPORT VCARD (.vcf) ────────────────────────────────
-function exportVCard() {
-  const data = filtered.length ? filtered : allContacts;
-  if (!data.length) { toast('No contacts to export.', 'error'); return; }
+let _vcardSource = [];   // full list shown in modal
+
+function openVCardModal() {
+  if (!allContacts.length) { toast('No contacts to export.', 'error'); return; }
+  // pre-select filtered contacts if a search is active, else all
+  _vcardSource = allContacts;
+  const preSelected = new Set((filtered.length && filtered.length < allContacts.length ? filtered : allContacts).map((_,i) => i));
+  document.getElementById('vcardSearch').value = '';
+  _renderVCardList(_vcardSource, preSelected);
+  document.getElementById('vcardModal').classList.add('open');
+}
+
+function _vcardRowHtml(c, idx, checked) {
+  const label = [c['NAME'], c['COMPANY']].filter(Boolean).join(' — ') || '(no name)';
+  const sub   = [c['POSITION'], c['CONTACT#1']].filter(Boolean).join(' · ');
+  return `<label class="vcard-row ${checked?'vcard-checked':''}" data-idx="${idx}">
+    <input type="checkbox" value="${idx}" ${checked?'checked':''} onchange="vcardCheckChange()"/>
+    <div>
+      <div style="font-size:.85rem;font-weight:600;color:var(--gray-800);">${label}</div>
+      ${sub?`<div style="font-size:.75rem;color:var(--gray-400);">${sub}</div>`:''}
+    </div>
+  </label>`;
+}
+
+function _renderVCardList(source, checkedSet) {
+  const list = document.getElementById('vcardList');
+  list.innerHTML = source.map((c, i) => _vcardRowHtml(c, i, checkedSet ? checkedSet.has(i) : true)).join('');
+  vcardCheckChange();
+}
+
+function vcardFilter(q) {
+  q = q.toLowerCase().trim();
+  const list = document.getElementById('vcardList');
+  list.querySelectorAll('.vcard-row').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+}
+
+function vcardToggleAll(checked) {
+  document.getElementById('vcardList')
+    .querySelectorAll('input[type="checkbox"]')
+    .forEach(cb => {
+      const row = cb.closest('.vcard-row');
+      if (row.style.display !== 'none') {
+        cb.checked = checked;
+        row.classList.toggle('vcard-checked', checked);
+      }
+    });
+  vcardCheckChange();
+}
+
+function vcardCheckChange() {
+  const boxes = document.getElementById('vcardList').querySelectorAll('input[type="checkbox"]');
+  const checked = [...boxes].filter(b => b.checked);
+  const all     = [...boxes].filter(b => b.closest('.vcard-row').style.display !== 'none');
+  document.getElementById('vcardExportCount').textContent = checked.length;
+  document.getElementById('vcardSelCount').textContent    = `${checked.length} of ${allContacts.length} selected`;
+  document.getElementById('vcardExportBtn').disabled      = checked.length === 0;
+  document.getElementById('vcardSelectAll').checked       = all.length > 0 && checked.length === all.length;
+  // highlight rows
+  boxes.forEach(b => b.closest('.vcard-row').classList.toggle('vcard-checked', b.checked));
+}
+
+function doExportVCard() {
+  const checked = [...document.getElementById('vcardList').querySelectorAll('input[type="checkbox"]:checked')];
+  if (!checked.length) { toast('No contacts selected.', 'error'); return; }
+  const data = checked.map(b => _vcardSource[parseInt(b.value)]);
   const ve = v => (v||'').toString()
     .replace(/\\/g,'\\\\').replace(/,/g,'\\,')
     .replace(/;/g,'\\;').replace(/\n/g,'\\n');
@@ -1361,7 +1464,8 @@ function exportVCard() {
   link.download = `RTC_Contacts_${currentUser}_${date}.vcf`;
   link.click();
   URL.revokeObjectURL(url);
-  toast(`Exported ${data.length} contacts as vCard (.vcf)`, 'success');
+  closeModal('vcardModal');
+  toast(`Exported ${data.length} contact${data.length>1?'s':''} as vCard (.vcf)`, 'success');
 }
 
 function doSearch() {
