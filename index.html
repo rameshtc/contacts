@@ -210,7 +210,14 @@ textarea.form-control{resize:vertical;min-height:72px;}
     <div><div class="header-title">RTC Client Contact System</div><span class="header-sub" id="contactCountLabel">Loading…</span></div>
   </div>
   <div class="header-actions">
-    <span style="font-size:.75rem;color:rgba(255,255,255,.8);margin-right:4px;" id="headerUsername"></span>
+    <!-- Header avatar + name -->
+    <div style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="navigate('profile')" title="My Profile">
+      <div id="headerAvatar" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.25);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.4);">
+        <img id="headerAvatarImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+        <span id="headerAvatarInitial" style="font-size:.85rem;font-weight:800;color:#fff;">?</span>
+      </div>
+      <span style="font-size:.75rem;color:rgba(255,255,255,.9);font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="headerUsername"></span>
+    </div>
     <span class="sync-status" id="syncStatus"></span>
     <button class="btn-icon" onclick="loadContacts(true)" title="Sync">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -597,7 +604,8 @@ async function doLogin() {
     currentUser      = json.username;
     currentSheetName = json.sheetName;
     document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('headerUsername').textContent = '👤 ' + currentUser.toUpperCase();
+    document.getElementById('headerUsername').textContent = currentUser;
+    document.getElementById('headerAvatarInitial').textContent = currentUser.charAt(0).toUpperCase();
     await Promise.all([loadContacts(), loadProfile()]);
   } catch (err) {
     errEl.textContent = err.message;
@@ -628,22 +636,36 @@ async function loadProfile() {
 function applyProfileToUI() {
   const p    = currentProfile;
   const name = p.displayName || currentUser;
-  document.getElementById('headerUsername').textContent = '👤 ' + name.toUpperCase();
+
+  // Header: name text
+  document.getElementById('headerUsername').textContent = name;
+
+  // Header: avatar
+  const hImg = document.getElementById('headerAvatarImg');
+  const hIni = document.getElementById('headerAvatarInitial');
+  if (p.photo) {
+    hImg.src = p.photo; hImg.style.display = 'block'; hIni.style.display = 'none';
+  } else {
+    hImg.style.display = 'none'; hIni.style.display = 'block';
+    hIni.textContent = name.charAt(0).toUpperCase();
+  }
+
+  // Profile page
   document.getElementById('profileHeaderName').textContent     = p.displayName || '(no display name)';
   document.getElementById('profileHeaderUsername').textContent = '@' + currentUser;
   document.getElementById('profile_displayName').value = p.displayName || '';
   document.getElementById('profile_phone').value       = p.phone       || '';
   document.getElementById('profile_email').value       = p.email       || '';
   document.getElementById('profile_bio').value         = p.bio         || '';
-  // Avatar
+
+  // Profile page avatar
   const img     = document.getElementById('profileAvatarImg');
   const initial = document.getElementById('profileAvatarInitial');
   if (p.photo) {
     img.src = p.photo; img.style.display = 'block'; initial.style.display = 'none';
   } else {
-    img.style.display = 'none';
-    initial.style.display = 'block';
-    initial.textContent = (p.displayName || currentUser).charAt(0).toUpperCase();
+    img.style.display = 'none'; initial.style.display = 'block';
+    initial.textContent = name.charAt(0).toUpperCase();
   }
 }
 
@@ -697,6 +719,9 @@ function doLogout() {
   document.getElementById('loginPass').value = '';
   document.getElementById('loginError').style.display = 'none';
   document.getElementById('headerUsername').textContent = '';
+  document.getElementById('headerAvatarImg').style.display  = 'none';
+  document.getElementById('headerAvatarInitial').style.display = 'block';
+  document.getElementById('headerAvatarInitial').textContent = '?';
   document.getElementById('loginScreen').classList.remove('hidden');
 }
 // ── AUTO COMPANY LOOKUP (runs after OCR, no click needed) ──
